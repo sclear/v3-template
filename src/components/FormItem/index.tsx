@@ -7,7 +7,7 @@ import createRules from "./../../tools/validate";
 import { ApiType } from "../../hook/useServer";
 
 export { createRules };
-interface FormType<T> {
+export interface FormType<T> {
   type?: keyof typeof Components;
   label?: string;
   model?: string;

@@ -20,6 +20,7 @@ import { useServer } from "../../hook/useServer";
 import { CreateElForm, CreateFormOptions } from "./../FormItem";
 export * from "./../FormItem";
 import { RuleItem } from "async-validator";
+import { ruleHelper } from "./rule.helper";
 import { omit } from "@/tools/util";
 
 export { createRules };
@@ -116,11 +117,7 @@ export default defineComponent({
       Object.keys(rules).forEach((key: keyof typeof rules) => {
         const ruleItem = rules[key];
 
-        if (isCreateValidateInstance(ruleItem)) {
-          result[key] = ruleItem.rules;
-        } else {
-          result[key] = ruleItem;
-        }
+        result[key] = ruleHelper(ruleItem, key, createOption.form);
       });
       return result || {};
     }

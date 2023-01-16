@@ -38,6 +38,11 @@ const searchForm = CreateFormOption({
       label: "name",
       model: "name",
       row: [8],
+      onChange({ type, value, data }) {
+        console.log(type);
+        console.log(value);
+        console.log(data);
+      },
     },
     {
       type: "Input",
@@ -71,7 +76,20 @@ const searchForm = CreateFormOption({
       type: "DatePicker",
       label: "birth",
       model: "birth",
+      defaultValue(data) {
+        return [data.value.sDate, data.value.eDate];
+      },
+      onChange({ data, value }) {
+        data.value.sDate = value[0];
+        data.value.eDate = value[1];
+      },
       row: [8],
+      customProps: {
+        type: "daterange",
+        rangeSeparator: "To",
+        startPlaceholder: "Startdate",
+        endPlaceholder: "End date",
+      },
     },
     {
       row: [24],
@@ -108,6 +126,8 @@ const searchForm = CreateFormOption({
     idCard: "",
     birth: "",
     phone: "",
+    sDate: "2022-12-07",
+    eDate: '"2199-12-09"',
   }),
 });
 
@@ -265,8 +285,8 @@ const searchFormRule = CreateFormOption({
   }),
   createRule(create) {
     return {
-      name: create.must("请输入姓名"),
-      sex: create.must("请选择性别"),
+      name: create.required(),
+      sex: create.required(),
     };
   },
   onSuccess() {

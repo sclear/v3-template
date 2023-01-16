@@ -1,6 +1,12 @@
 import { done } from ".";
 
 export class rules {
+  required() {
+    const rule = {
+      required: true,
+    };
+    return done.call(this, rule);
+  }
   /**
    * @description 必填项
    * @returns RuleItem
