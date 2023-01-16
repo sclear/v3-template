@@ -38,7 +38,7 @@ interface UseServerReturn<Result, U> {
   code: Ref<Code>;
   run: () => void;
   config: {
-    data: U extends object ? U : any;
+    data: Ref<U extends object ? U : any>;
     api: Ref<InputApi>;
     urlParams: Ref<any>;
   };
@@ -58,6 +58,9 @@ export function useServer<T = any, K = any, U extends object = any>(
    * @param {Ref<ApiType>}
    */
   const configApi = isRef(config.api) ? config.api : ref(config.api);
+
+  const dataSource = isObject(config.data) ? config.data : ({} as any);
+  const configData = isRef(dataSource) ? dataSource : ref(dataSource);
 
   /**
    * @description config urlParams
@@ -97,10 +100,10 @@ export function useServer<T = any, K = any, U extends object = any>(
         httpModule.url + (unref(configUrlParams || undefined) || ""),
         ["get", "delete"].includes(httpModule.method)
           ? {
-              params: unref(config.data),
+              params: unref(configData),
               responseType: config?.responseType || "json",
             }
-          : unref(config.data)
+          : unref(configData)
       )
         .then((res) => {
           if (res.code === 200) {
@@ -152,7 +155,8 @@ export function useServer<T = any, K = any, U extends object = any>(
      * @param {Object}
      */
     config: {
-      data: isObject(config.data) ? config.data : ({} as any),
+      data: configData,
+      // data: isObject(config.data) ? config.data : ({} as any),
       api: configApi,
       urlParams: configUrlParams,
     },
