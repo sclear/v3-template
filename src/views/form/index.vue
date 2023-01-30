@@ -38,11 +38,6 @@ const searchForm = CreateFormOption({
       label: "name",
       model: "name",
       row: [8],
-      onChange({ type, value, data }) {
-        console.log(type);
-        console.log(value);
-        console.log(data);
-      },
     },
     {
       type: "Input",
@@ -156,7 +151,7 @@ const searchFormVIf = CreateFormOption({
       model: "name",
       row: [8],
       vIf({ data }) {
-        return data.value.showName === 0;
+        return data.value.showName === 1;
       },
       vDisabled({ data }) {
         return data.value.vDisabledName === 1;
@@ -181,11 +176,10 @@ const searchFormVIf = CreateFormOption({
   ],
   data: ref({
     name: "",
-    showName: undefined,
+    showName: 1,
     vDisabledName: undefined,
   }),
 });
-
 const searchFormRefRender = ref();
 const searchFormRender = CreateFormOption({
   form: [

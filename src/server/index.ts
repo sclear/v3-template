@@ -4,7 +4,7 @@ function Count(num: number) {
   return new Array(num).fill(" ");
 }
 
-import { createApi } from "./../hook/useServer/lib/store";
+import { createApi } from "@/hook/useServer/lib/store";
 
 export const api = {
   user: {

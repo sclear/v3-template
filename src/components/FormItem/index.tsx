@@ -71,17 +71,20 @@ export function CreateElForm(
 
         // computed v-if
         const vif = computed(() => {
+          console.log(item.vIf);
           if (
-            item.vIf &&
-            item.model &&
-            item.vIf({
-              model: item.model || "",
-              value: props.data.value[item.model],
-              data: props.data,
-            })
+            (item.vIf &&
+              // item.model &&
+              item.vIf({
+                model: item.model || "",
+                value: props.data.value[item.model || ""],
+                data: props.data,
+              })) ||
+            item.vIf === undefined
           ) {
-            return false;
-          } else return true;
+            return true;
+          }
+          return false;
         });
         if (!vif.value) return "";
 

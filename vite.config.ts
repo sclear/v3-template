@@ -23,5 +23,8 @@ export default ({ mode }) => {
         "@": path.resolve(__dirname, "src/"),
       },
     },
+    server: {
+      hmr: true,
+    },
   });
 };
