@@ -66,10 +66,16 @@ export default defineComponent({
       }, 4);
     }
 
+    // dialog
     const dialog = inject<{
       setFormInstance?: (instance: ComponentInternalInstance | null) => void;
       disabled?: ComputedRef<boolean>;
     }>("renderDialog", {});
+
+    // table
+    const tableRun = inject<{
+      run?: () => void;
+    }>("formTable", {});
 
     const instance = getCurrentInstance();
 
@@ -103,15 +109,29 @@ export default defineComponent({
 
                 onSuccess(resp, res) {
                   if (res.code === 200) {
-                    createOption.onSuccess
-                      ? createOption.onSuccess(
-                          done,
-                          unref(createOption.data),
-                          res
-                        )
-                      : done();
+                    // createOption.onSuccess
+                    //   ? createOption.onSuccess(
+                    //       done,
+                    //       unref(createOption.data),
+                    //       res
+                    //     )
+                    //   : (done(); tableRun?.run())
+                    if (createOption.onSuccess) {
+                      createOption.onSuccess(
+                        done,
+                        unref(createOption.data),
+                        res
+                      );
+                    } else {
+                      done();
+                      tableRun?.run && tableRun?.run();
+                    }
                     reset();
                   }
+                },
+                onError() {
+                  done && done(false);
+                  createOption.onError && createOption.onError(done);
                 },
               });
               run();

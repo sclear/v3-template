@@ -1,4 +1,4 @@
-import { computed, defineComponent, reactive, ref, unref } from "vue";
+import { computed, defineComponent, reactive, ref, unref, provide } from "vue";
 import type { PropType } from "vue";
 import "./index.less";
 import { ElTable, ElPagination, ElTableColumn } from "element-plus";
@@ -87,7 +87,7 @@ export default defineComponent({
       type: Object as PropType<any>,
     },
   },
-  setup(props, { expose }) {
+  setup(props, { expose, slots }) {
     const pagination = reactive({
       pageSize: 10,
       currentPage: 1,
@@ -143,6 +143,11 @@ export default defineComponent({
       },
     });
 
+    // provide
+    provide("formTable", {
+      run,
+    });
+
     expose({
       run,
     });
@@ -173,6 +178,7 @@ export default defineComponent({
             }}
           />
         )}
+        {(slots.default && slots.default()) || ""}
       </div>
     );
   },
