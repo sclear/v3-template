@@ -14,7 +14,12 @@ export interface FormType<T> {
   row?: number[];
   align?: "left" | "right" | "center";
   vIf?: (args: { value: unknown; model: string; data: T }) => boolean;
-  vDisabled?: (args: { value: unknown; model: string; data: T }) => boolean;
+  vDisabled?: (args: {
+    value: unknown;
+    model: string;
+    data: T;
+    api: ApiType;
+  }) => boolean;
   render?: (
     model: string,
     data: T,
@@ -38,15 +43,20 @@ export interface FormType<T> {
  * T : data
  * U : omit
  */
+
+type RefValue<T> = T extends Ref<infer A> ? A : T;
+
 export type CreateFormOptions<T = any> = {
   form: FormType<T>[];
   disabled?: Ref<boolean> | undefined;
+  type?: any;
   data: T;
   labelWidth?: number;
   api?: ApiType | Ref<ApiType>;
   formProp?: any;
+  requestData?: (data: RefValue<T>, api: ApiType) => any;
   onChange?: (data: { value: unknown; type: string; data: T }) => void;
-  onSuccess?: (done: () => void) => void;
+  onSuccess?: (done: () => void, data: RefValue<T>, requestData?: any) => void;
   onError?: (done: () => void) => void;
   createRule?: (
     ruleInstance: typeof createRules
@@ -90,6 +100,19 @@ export function CreateElForm(
 
         // component v-disabled
         const disabled = computed(() => {
+          // 局部disabled最大权重
+          if (
+            item.vDisabled &&
+            item.vDisabled({
+              model: item.model || "",
+              value: item.model
+                ? props.data.value[item.model]
+                : props.data.value,
+              data: props.data,
+              api: props.api,
+            }) === false
+          )
+            return false;
           // if (unref(option.disabled) === true) return true;
           if (unref(option.disabled) === true || unref(dialog.disabled))
             return true;
@@ -101,6 +124,7 @@ export function CreateElForm(
               model: item.model || "",
               value: props.data.value[item.model],
               data: props.data,
+              api: props.api,
             })
           ) {
             return true;
@@ -164,7 +188,7 @@ export function CreateElForm(
               <ElCol span={row[0] || 24} offset={row[1] || 0}>
                 <ElFormItem
                   labelWidth={item.labelWidth || undefined}
-                  label={item.label + ":"}
+                  label={item.label ? item.label + ":" : ""}
                   class={item.className}
                   prop={item.model}
                 >
@@ -181,7 +205,7 @@ export function CreateElForm(
               <ElCol span={row[0] || 24} offset={row[1] || 0}>
                 <ElFormItem
                   labelWidth={item.labelWidth || undefined}
-                  label={item.label + ":"}
+                  label={item.label ? item.label + ":" : ""}
                   class={item.className}
                 >
                   {item.renderFormItem("", props.data, disabled)}
@@ -210,13 +234,14 @@ export function CreateElForm(
           },
           defaultValue: item.defaultValue && item.defaultValue(props.data),
         };
+        console.log(item.label);
 
         return (
           <>
             <ElCol span={row[0] || 24} offset={row[1] || 0}>
               <ElFormItem
                 labelWidth={item.labelWidth || undefined}
-                label={item.label + ":"}
+                label={item.label ? item.label + ":" : ""}
                 class={item.className}
                 prop={item.model}
               >

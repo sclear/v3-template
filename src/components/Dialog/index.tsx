@@ -172,15 +172,18 @@ export default defineComponent({
       disabled: formDialog,
     });
 
+    // destroy-on-close={true}
     return () => (
       <>
         <ElDialog
           {...elProps}
-          destroy-on-close={true}
           v-model={visible.value}
           width={width}
           append-to-body={true}
           v-slots={slots}
+          onClose={() => {
+            cancelCallReset();
+          }}
           show-close={false}
           close-on-click-modal={false}
           close-on-press-escape={false}

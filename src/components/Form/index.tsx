@@ -53,10 +53,17 @@ export default defineComponent({
   },
   emit: ["update:data"],
   setup(props, { expose, emit }) {
+    let store: any = [];
+
     const elFormRef = ref();
 
+    store = JSON.parse(JSON.stringify(props.createOption.data.value));
+
     function reset() {
-      elFormRef.value.resetFields();
+      props.createOption.data.value = JSON.parse(JSON.stringify(store));
+      setTimeout(() => {
+        elFormRef.value.resetFields();
+      }, 4);
     }
 
     const dialog = inject<{
@@ -85,11 +92,24 @@ export default defineComponent({
             // if has request api
             if (createOption.api) {
               const { run } = useServer({
-                api: createOption.api,
+                api: unref(createOption.api),
                 data: requestData,
-                onSuccess(res) {
+                ...(createOption.requestData
+                  ? createOption.requestData(
+                      unref(createOption.data),
+                      unref(createOption.api)
+                    )
+                  : { succussMessage: "操作成功" }),
+
+                onSuccess(resp, res) {
                   if (res.code === 200) {
-                    createOption.onSuccess && createOption.onSuccess(done);
+                    createOption.onSuccess
+                      ? createOption.onSuccess(
+                          done,
+                          unref(createOption.data),
+                          res
+                        )
+                      : done();
                     reset();
                   }
                 },
@@ -97,7 +117,8 @@ export default defineComponent({
               run();
               return;
             }
-            createOption.onSuccess && createOption.onSuccess(done);
+            createOption.onSuccess &&
+              createOption.onSuccess(done, unref(createOption.data.value));
           } else {
             done && done(false);
             createOption.onError && createOption.onError(done);
@@ -117,6 +138,11 @@ export default defineComponent({
       Object.keys(rules).forEach((key: keyof typeof rules) => {
         const ruleItem = rules[key];
 
+        // if (isCreateValidateInstance(ruleItem)) {
+        //   result[key] = ruleItem.rules;
+        // } else {
+        //   result[key] = ruleItem;
+        // }
         result[key] = ruleHelper(ruleItem, key, createOption.form);
       });
       return result || {};
@@ -126,6 +152,7 @@ export default defineComponent({
     return () => (
       <>
         <ElForm
+          stripe
           {...formProp}
           ref={elFormRef}
           labelWidth={createOption.labelWidth || 120}
