@@ -14,10 +14,20 @@ const defaultProps = {
   align: "center",
 };
 
+type Pagination = {
+  pageSize: number;
+  currentPage: number;
+  total: number;
+};
+
 interface CreateTable {
   api: ApiType;
   column: Column[];
   beforeSetData?: any;
+  customProps?: any;
+  pagination?: boolean | ((pagination: Pagination) => any);
+  total?: (res: any) => number;
+  autoRun?: boolean;
 }
 
 // 生成Table数据
@@ -60,7 +70,7 @@ interface Column {
   customProps?: Record<string, unknown>;
   render?: (
     text: string,
-    row: object,
+    row: any,
     $index: number
   ) => JSX.Element | string | any;
 }
@@ -81,26 +91,55 @@ export default defineComponent({
     const pagination = reactive({
       pageSize: 10,
       currentPage: 1,
-      total: 300,
+      total: 0,
     });
-
+    // ...(props.createOption.pagination ? pagination : {})
     const params = computed(() => {
+      let pages = {};
+      // 未传值
+      if (props.createOption.pagination === undefined) {
+        pages = {
+          page: {
+            pageSize: pagination.pageSize,
+            pageNo: pagination.currentPage,
+          },
+        };
+      }
+      // 去掉pagination
+      if (props.createOption.pagination === false) {
+      }
+      // 方法
+      if (typeof props.createOption.pagination === "function") {
+        pages =
+          props.createOption.pagination &&
+          props.createOption.pagination(pagination);
+      }
       return {
-        ...pagination,
+        ...pages,
         ...(unref(props.searchParams || {}) || {}),
       };
     });
     const { loading, run, data } = useServer({
       api: props.createOption.api,
       data: params,
-      autoRun: true,
+      autoRun:
+        typeof props.createOption.autoRun === "boolean"
+          ? props.createOption.autoRun
+          : true,
       beforeSetData:
         props.createOption.beforeSetData ||
         function (res) {
-          return res.data;
+          return res || [];
         },
       onSuccess(res) {
-        pagination.total = res.total;
+        if (
+          props.createOption.pagination ||
+          props.createOption.pagination === undefined
+        ) {
+          pagination.total = props.createOption.total
+            ? props.createOption.total(res)
+            : res?.page?.count || 0;
+        }
       },
     });
 
@@ -110,22 +149,30 @@ export default defineComponent({
 
     return () => (
       <div v-loading={loading.value}>
-        <ElTable data={data.value} border>
+        <ElTable
+          data={data.value}
+          border
+          {...(props.createOption.customProps || {})}
+        >
           {deepResolver(props.createOption.column)}
         </ElTable>
-        <ElPagination
-          class="pagination"
-          v-model:page-size={pagination.pageSize}
-          v-model:currentPage={pagination.currentPage}
-          total={pagination.total}
-          layout="prev, pager, next"
-          onSize-change={() => {
-            run();
-          }}
-          onCurrent-change={() => {
-            run();
-          }}
-        />
+        {typeof props.createOption.pagination === "boolean" ? (
+          props.createOption.pagination
+        ) : (
+          <ElPagination
+            class="pagination"
+            v-model:page-size={pagination.pageSize}
+            v-model:currentPage={pagination.currentPage}
+            total={pagination.total}
+            layout="prev, pager, next"
+            onSize-change={() => {
+              run();
+            }}
+            onCurrent-change={() => {
+              run();
+            }}
+          />
+        )}
       </div>
     );
   },
