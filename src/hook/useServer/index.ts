@@ -2,6 +2,7 @@ import { onMounted, ref, unref, UnwrapRef, Ref, isRef } from "vue";
 import { request } from "./lib";
 import { ResponseData, Code, IfAny } from "./lib/index.type";
 import serverSetting from "./../../server/index";
+import { ElMessage } from "element-plus";
 
 const { getApiModule } = serverSetting;
 
@@ -14,6 +15,8 @@ interface UseServerConfig<Result, T, U> {
   default?: any;
   autoRun?: boolean;
   urlParams?: UnwrapRef<any> | Ref<any>;
+  succussMessage?: string;
+  errorMessage?: string;
   onError?: (err: any) => void;
   onSuccess?: (data: T, response: ResponseData<T>) => void;
   beforeSetData?: (data: T, response: ResponseData<T>) => Result;
@@ -79,7 +82,7 @@ export function useServer<T = any, K = any, U extends object = any>(
     if (
       httpModule._Mock_ !== false &&
       httpModule.Mock &&
-      process.env.VITE_API_Mock_ === "1"
+      process.env.VITE_APP_Mock_ === "1"
     ) {
       data.value = config.beforeSetData
         ? config.beforeSetData(httpModule.Mock, {
@@ -94,6 +97,8 @@ export function useServer<T = any, K = any, U extends object = any>(
           message: "",
           data: httpModule.Mock,
         });
+      config.succussMessage &&
+        ElMessage({ message: config.succussMessage, type: "success" });
       loading.value = false;
     } else {
       request[httpModule.method](
@@ -103,7 +108,10 @@ export function useServer<T = any, K = any, U extends object = any>(
               params: unref(configData),
               responseType: config?.responseType || "json",
             }
-          : unref(configData)
+          : unref(configData),
+        {
+          withCredentials: true,
+        }
       )
         .then((res) => {
           if (res.code === 200) {
@@ -112,8 +120,13 @@ export function useServer<T = any, K = any, U extends object = any>(
               ? config.beforeSetData(res.data, res)
               : res.data;
             config.onSuccess && config.onSuccess(res.data, res);
+            config.succussMessage &&
+              ElMessage({ message: config.succussMessage, type: "success" });
+            console.log(config.succussMessage);
           } else {
             config.onError && config.onError(res);
+            config.errorMessage &&
+              ElMessage({ message: config.errorMessage, type: "error" });
           }
         })
         .catch((err) => {
@@ -125,9 +138,7 @@ export function useServer<T = any, K = any, U extends object = any>(
     }
   }
 
-  onMounted(() => {
-    config?.autoRun && run();
-  });
+  config?.autoRun && run();
 
   return {
     /**
@@ -156,7 +167,6 @@ export function useServer<T = any, K = any, U extends object = any>(
      */
     config: {
       data: configData,
-      // data: isObject(config.data) ? config.data : ({} as any),
       api: configApi,
       urlParams: configUrlParams,
     },
