@@ -31,6 +31,11 @@ function isObject(t: any): t is object {
   return typeof t === "object";
 }
 
+type RunOption = {
+  data?: any;
+  urlParams?: any;
+};
+
 interface UseServerReturn<Result, U> {
   /**
    * @Description 应用数据Data
@@ -39,7 +44,7 @@ interface UseServerReturn<Result, U> {
   data: Ref<Result>;
   loading: Ref<boolean>;
   code: Ref<Code>;
-  run: () => void;
+  run: (runData?: RunOption) => void;
   config: {
     data: Ref<U extends object ? U : any>;
     api: Ref<InputApi>;
@@ -73,11 +78,17 @@ export function useServer<T = any, K = any, U extends object = any>(
     ? config.urlParams
     : ref(config.urlParams);
 
-  function run() {
+  function run(runData?: RunOption) {
+    if (runData && runData.data) {
+      configData.value = unref(runData.data);
+    }
+    if (runData && runData.urlParams) {
+      configUrlParams.value = unref(runData.urlParams);
+    }
+
     loading.value = true;
     const method = unref(configApi);
     const httpModule = getApiModule(method);
-    console.log(httpModule);
     // Mock
     if (
       httpModule._Mock_ !== false &&
