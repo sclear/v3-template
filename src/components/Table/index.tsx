@@ -143,13 +143,22 @@ export default defineComponent({
       },
     });
 
+    const search = (pager: boolean = false) => {
+      console.log("in");
+      if (pager) {
+        pagination.currentPage = 1;
+        pagination.pageSize = 10;
+      }
+      run();
+    };
+
     // provide
     provide("formTable", {
-      run,
+      run: search,
     });
 
     expose({
-      run,
+      run: search,
     });
 
     return () => (

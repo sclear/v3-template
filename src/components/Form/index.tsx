@@ -60,6 +60,13 @@ export default defineComponent({
     store = JSON.parse(JSON.stringify(props.createOption.data.value));
 
     function reset() {
+      // has tableRef reset pagination
+      if (props.createOption.tableRef) {
+        props.createOption.tableRef?.value?.run &&
+          props.createOption.tableRef?.value?.run(true);
+      }
+
+      // 初始化data
       props.createOption.data.value = JSON.parse(JSON.stringify(store));
       setTimeout(() => {
         elFormRef.value.resetFields();

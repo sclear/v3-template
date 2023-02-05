@@ -25,6 +25,7 @@ export default ({ mode }) => {
     },
     server: {
       hmr: true,
+      port: 8001,
     },
   });
 };
