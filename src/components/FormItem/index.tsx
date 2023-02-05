@@ -1,10 +1,11 @@
 import { Ref, computed, unref, ComputedRef, ref } from "vue";
 import { ElCol, ElFormItem } from "element-plus";
 import { Components } from "../Form/components";
-import { pick } from "../../tools/util";
+import { pick, setValueByPath } from "../../tools/util";
 import { RuleItem } from "async-validator";
 import createRules from "./../../tools/validate";
 import { ApiType } from "../../hook/useServer";
+import { getValueByPath } from "../../tools/util";
 
 export { createRules };
 export interface FormType<T> {
@@ -88,7 +89,7 @@ export function CreateElForm(
               // item.model &&
               item.vIf({
                 model: item.model || "",
-                value: props.data.value[item.model || ""],
+                value: getValueByPath(props.data.value, item.model || ""),
                 data: props.data,
               })) ||
             item.vIf === undefined
@@ -107,7 +108,7 @@ export function CreateElForm(
             item.vDisabled({
               model: item.model || "",
               value: item.model
-                ? props.data.value[item.model]
+                ? getValueByPath(props.data.value, item.model)
                 : props.data.value,
               data: props.data,
               api: props.api,
@@ -123,7 +124,7 @@ export function CreateElForm(
             item.vDisabled &&
             item.vDisabled({
               model: item.model || "",
-              value: props.data.value[item.model],
+              value: getValueByPath(props.data.value, item.model),
               data: props.data,
               api: props.api,
             })
@@ -175,7 +176,7 @@ export function CreateElForm(
                     }}
                   >
                     {item.render(
-                      props.data.value[item.model],
+                      getValueByPath(props.data.value, item.model),
                       props.data,
                       disabled
                     )}
@@ -194,7 +195,7 @@ export function CreateElForm(
                   prop={item.model}
                 >
                   {item.renderFormItem(
-                    props.data.value[item.model],
+                    getValueByPath(props.data.value, item.model),
                     props.data,
                     disabled
                   )}
@@ -235,7 +236,6 @@ export function CreateElForm(
           },
           defaultValue: item.defaultValue && item.defaultValue(props.data),
         };
-        console.log(item.label);
 
         return (
           <>
@@ -248,7 +248,14 @@ export function CreateElForm(
               >
                 <CustomComponent
                   {...childProp}
-                  v-model={props.data.value[item.model]}
+                  modelValue={getValueByPath(
+                    props.data.value,
+                    item.model || ""
+                  )}
+                  onUpdate:modelValue={(e) => {
+                    setValueByPath(props.data.value, item.model || "", e);
+                  }}
+                  // v-model={props.data.value[item.model]}
                 />
               </ElFormItem>
             </ElCol>
