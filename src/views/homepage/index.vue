@@ -1,14 +1,16 @@
 <template>
+  {{ searchForm.data.value.obj }}
   <Form ref="searchFormRef" :createOption="searchForm" />
   <Table
     ref="tableRef"
     :createOption="tableOption"
     :search-params="searchForm.data"
     class="mt-2"
-  />
-  <Dialog :width="900" ref="dialogRef">
-    <Form :createOption="dialogForm" />
-  </Dialog>
+  >
+    <Dialog :width="900" ref="dialogRef">
+      <Form :createOption="dialogForm" />
+    </Dialog>
+  </Table>
 </template>
 
 <script lang="tsx" setup>
@@ -24,15 +26,13 @@ const searchFormRef = ref();
 const tableRef = ref();
 
 const searchForm = CreateFormOption({
+  tableRef,
   form: [
     {
       type: "Input",
       label: "姓名",
-      model: "name",
+      model: "obj.link.0.name",
       row: [8],
-      vDisabled({ data }) {
-        return data.value.name == "1";
-      },
     },
     {
       type: "Input",
@@ -96,7 +96,6 @@ const searchForm = CreateFormOption({
               type="info"
               onClick={() => {
                 searchFormRef.value.reset();
-                tableRef.value.run();
               }}
             >
               重置
@@ -120,7 +119,19 @@ const searchForm = CreateFormOption({
     idCard: "",
     birth: "",
     phone: "",
+    obj: {
+      link: [
+        {
+          o: "",
+        },
+      ],
+    },
   }),
+  createRule(create) {
+    return {
+      "obj.link.0.name": create.required(),
+    };
+  },
   // labelWidth: 80,
 });
 
@@ -173,13 +184,6 @@ const dialogForm = CreateFormOption({
       idCard: create.must(),
       phone: create.must().rules,
     };
-  },
-  onSuccess(done) {
-    done();
-    ElMessage({
-      message: "新增成功",
-      type: "success",
-    });
   },
 });
 

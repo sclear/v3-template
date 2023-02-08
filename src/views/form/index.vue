@@ -235,8 +235,8 @@ const searchFormRule = CreateFormOption({
   form: [
     {
       type: "Input",
-      label: "name",
-      model: "name",
+      label: "names",
+      model: "obj.link.0.name",
       row: [8],
     },
     {
@@ -276,11 +276,17 @@ const searchFormRule = CreateFormOption({
   ],
   data: ref({
     val: "Please Input",
+    obj: {
+      link: [
+        {
+          o: "",
+        },
+      ],
+    },
   }),
   createRule(create) {
     return {
-      name: create.required(),
-      sex: create.required(),
+      "obj.link.0.name": create.required(),
     };
   },
   onSuccess() {

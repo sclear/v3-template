@@ -15,7 +15,7 @@ interface UseServerConfig<Result, T, U> {
   default?: any;
   autoRun?: boolean;
   urlParams?: UnwrapRef<any> | Ref<any>;
-  succussMessage?: string;
+  successMessage?: string;
   errorMessage?: string;
   onError?: (err: any) => void;
   onSuccess?: (data: T, response: ResponseData<T>) => void;
@@ -108,8 +108,8 @@ export function useServer<T = any, K = any, U extends object = any>(
           message: "",
           data: httpModule.Mock,
         });
-      config.succussMessage &&
-        ElMessage({ message: config.succussMessage, type: "success" });
+      config.successMessage &&
+        ElMessage({ message: config.successMessage, type: "success" });
       loading.value = false;
     } else {
       request[httpModule.method](
@@ -131,9 +131,9 @@ export function useServer<T = any, K = any, U extends object = any>(
               ? config.beforeSetData(res.data, res)
               : res.data;
             config.onSuccess && config.onSuccess(res.data, res);
-            config.succussMessage &&
-              ElMessage({ message: config.succussMessage, type: "success" });
-            console.log(config.succussMessage);
+            config.successMessage &&
+              ElMessage({ message: config.successMessage, type: "success" });
+            console.log(config.successMessage);
           } else {
             config.onError && config.onError(res);
             config.errorMessage &&

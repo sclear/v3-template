@@ -112,7 +112,7 @@ export default defineComponent({
                       unref(createOption.data),
                       unref(createOption.api)
                     )
-                  : { succussMessage: "操作成功" }),
+                  : { successMessage: "操作成功" }),
 
                 onSuccess(resp, res) {
                   if (res.code === 200) {
