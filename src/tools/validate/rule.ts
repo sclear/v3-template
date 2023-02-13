@@ -1,4 +1,6 @@
 import { done } from ".";
+import { unref } from "vue";
+import { getValueByPath } from "../util";
 
 export class rules {
   /**
@@ -151,6 +153,27 @@ export class rules {
       validator(rule: any, value: any, callback: any) {
         if (!/^([1-9]{1})(\d{15}|\d{18})$/.test(value)) {
           callback(new Error(message || "请正确填写您的银行卡号!"));
+        } else {
+          callback();
+        }
+      },
+    };
+
+    return done.call(this, rule);
+  }
+
+  /**
+   * @description 判断相同
+   * @returns RuleItem
+   */
+  equal(data: object, key: string, keyRpt: string, message?: string) {
+    const rule = {
+      validator(rule: any, value: any, callback: any) {
+        if (
+          getValueByPath(unref(data), key) !=
+          getValueByPath(unref(data), keyRpt)
+        ) {
+          callback(new Error(message || "结果不相等!"));
         } else {
           callback();
         }

@@ -156,7 +156,8 @@ export default defineComponent({
     });
 
     let formRules =
-      createOption.createRule && createOption.createRule(createRules);
+      createOption.createRule &&
+      createOption.createRule(createRules, createOption.data);
 
     function calcRules(rules: Record<string, RuleItem[] | typeof createRules>) {
       // rule result

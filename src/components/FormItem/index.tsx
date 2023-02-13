@@ -61,7 +61,8 @@ export type CreateFormOptions<T = any> = {
   onSuccess?: (done: () => void, data: RefValue<T>, requestData?: any) => void;
   onError?: (done: () => void) => void;
   createRule?: (
-    ruleInstance: typeof createRules
+    ruleInstance: typeof createRules,
+    data: T
   ) => Record<string, RuleItem[] | typeof createRules>;
 };
 
@@ -115,7 +116,6 @@ export function CreateElForm(
             }) === false
           )
             return false;
-          // if (unref(option.disabled) === true) return true;
           if (unref(option.disabled) === true || unref(dialog.disabled))
             return true;
           else if (
