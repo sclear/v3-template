@@ -171,7 +171,13 @@ export default defineComponent({
         // } else {
         //   result[key] = ruleItem;
         // }
-        result[key] = ruleHelper(ruleItem, key, createOption.form);
+        result[key] = ruleHelper(
+          ruleItem,
+          key,
+          typeof createOption.form === "function"
+            ? createOption.form(createOption.data.value)
+            : createOption.form
+        );
       });
       return result || {};
     }

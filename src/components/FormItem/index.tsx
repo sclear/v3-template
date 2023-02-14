@@ -48,7 +48,7 @@ export interface FormType<T> {
 type RefValue<T> = T extends Ref<infer A> ? A : T;
 
 export type CreateFormOptions<T = any> = {
-  form: FormType<T>[];
+  form: FormType<T>[] | ((data: RefValue<T>) => FormType<T>[]);
   disabled?: Ref<boolean> | undefined;
   type?: any;
   data: T;
@@ -73,7 +73,10 @@ export function CreateElForm(
 ): JSX.Element {
   return (
     <>
-      {option.form.map((item) => {
+      {(typeof option.form === "function"
+        ? option.form(option.data.value)
+        : option.form
+      ).map((item) => {
         let prop = pick(item, [
           "label",
           "model",
@@ -133,6 +136,7 @@ export function CreateElForm(
           } else return false;
         });
 
+        // align
         const row = item.row || [24, 0];
         const align = item.align || "left";
         const alignGroup = {

@@ -31,7 +31,7 @@ import Container from "./components/Container/index.vue";
   height: 100vh;
 }
 .el-header {
-  background-color: #8f6bff;
+  background-color: #409eff;
   //   color: #333;
   text-align: center;
   line-height: 60px;

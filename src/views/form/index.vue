@@ -1,4 +1,8 @@
 <template>
+  <!-- <ElInput v-model="k"></ElInput> -->
+  <ElInput v-model="k" />
+  <ElButton>666</ElButton>
+  {{ k }}
   <ElCard>
     <template #header> basics </template>
     <Form ref="searchFormRef" :createOption="searchForm" />
@@ -31,98 +35,132 @@ import Form, { CreateFormOption } from "@/components/Form/index";
 import { omit } from "@/tools/util";
 
 const searchFormRef = ref();
-const searchForm = CreateFormOption({
-  form: [
-    {
-      type: "Input",
-      label: "name",
-      model: "name",
-      row: [8],
-    },
-    {
-      type: "Input",
+
+const k = ref("0");
+const ks = "asdf,asd,fas,df";
+
+const kk = [
+  ...ks.split(",").map((item) => {
+    return {
+      type: "Input" as const,
       label: "phone",
       model: "phone",
       row: [8],
-    },
-    {
-      type: "Input",
-      label: "idCard",
-      model: "idCard",
-      row: [8],
-    },
-    {
-      type: "Select",
-      label: "sex",
-      model: "sex",
-      dataSource: [
-        {
-          value: 0,
-          label: "男",
-        },
-        {
-          value: 1,
-          label: "女",
-        },
-      ],
-      row: [8],
-    },
-    {
-      type: "DatePicker",
-      label: "birth",
-      model: "birth",
-      defaultValue(data) {
-        return [data.value.sDate, data.value.eDate];
+    };
+  }),
+];
+
+const searchForm = CreateFormOption({
+  form(data) {
+    return [
+      ...data.phone.split(",").map((item) => {
+        return {
+          type: "Input" as const,
+          label: "phone",
+          model: "phone",
+          row: [8],
+        };
+      }),
+      {
+        type: "Input",
+        label: "phone",
+        model: "phone",
+        row: [8],
       },
-      onChange({ data, value }) {
-        data.value.sDate = value[0];
-        data.value.eDate = value[1];
-      },
-      row: [8],
-      customProps: {
-        type: "daterange",
-        rangeSeparator: "To",
-        startPlaceholder: "Startdate",
-        endPlaceholder: "End date",
-      },
-    },
-    {
-      row: [24],
-      align: "center",
-      render() {
-        return (
-          <>
-            <ElButton
-              type="info"
-              onClick={() => {
-                searchFormRef.value.reset();
-              }}
-            >
-              Reset
-            </ElButton>
-            <ElButton
-              onClick={() => {
-                ElMessage({
-                  message: "Search success !!!",
-                  type: "success",
-                });
-              }}
-            >
-              Search
-            </ElButton>
-          </>
-        );
-      },
-    },
-  ],
+    ];
+  },
+  // form: [
+  //   {
+  //     type: "Input",
+  //     label: "name",
+  //     model: "name",
+  //     row: [8],
+  //   },
+  //   {
+  //     type: "Input",
+  //     label: "phone",
+  //     model: "phone",
+  //     row: [8],
+  //   },
+  //   {
+  //     type: "Input",
+  //     label: "idCard",
+  //     model: "idCard",
+  //     row: [8],
+  //   },
+  //   {
+  //     type: "Select",
+  //     label: "sex",
+  //     model: "sex",
+  //     dataSource: [
+  //       {
+  //         value: 0,
+  //         label: "男",
+  //       },
+  //       {
+  //         value: 1,
+  //         label: "女",
+  //       },
+  //     ],
+  // row: [8],
+  // },
+  //   {
+  //     type: "DatePicker",
+  //     label: "birth",
+  //     model: "birth",
+  //     defaultValue(data) {
+  //       return [data.value.sDate, data.value.eDate];
+  //     },
+  //     onChange({ data, value }) {
+  //       data.value.sDate = value[0];
+  //       data.value.eDate = value[1];
+  //     },
+  //     row: [8],
+  //     customProps: {
+  //       type: "daterange",
+  //       rangeSeparator: "To",
+  //       startPlaceholder: "Startdate",
+  //       endPlaceholder: "End date",
+  //     },
+  //   },
+  //   {
+  //     row: [24],
+  //     align: "center",
+  //     render() {
+  //       return (
+  //         <>
+  //           <ElButton
+  //             type="info"
+  //             onClick={() => {
+  //               searchFormRef.value.reset();
+  //             }}
+  //           >
+  //             Reset
+  //           </ElButton>
+  //           <ElButton
+  //             onClick={() => {
+  //               ElMessage({
+  //                 message: "Search success !!!",
+  //                 type: "success",
+  //               });
+  //             }}
+  //           >
+  //             Search
+  //           </ElButton>
+  //         </>
+  //       );
+  //     },
+  //   },
+  // ],
   data: ref({
     name: "",
     age: "",
     idCard: "",
     birth: "",
-    phone: "",
+    phone: "wer,wer,wer,ew",
     sDate: "2022-12-07",
     eDate: '"2199-12-09"',
+    arr: [],
   }),
 });
 
