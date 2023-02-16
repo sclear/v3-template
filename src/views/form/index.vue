@@ -1,8 +1,5 @@
 <template>
   <!-- <ElInput v-model="k"></ElInput> -->
-  <ElInput v-model="k" />
-  <ElButton>666</ElButton>
-  {{ k }}
   <ElCard>
     <template #header> basics </template>
     <Form ref="searchFormRef" :createOption="searchForm" />
@@ -36,27 +33,13 @@ import { omit } from "@/tools/util";
 
 const searchFormRef = ref();
 
-const k = ref("0");
-const ks = "asdf,asd,fas,df";
-
-const kk = [
-  ...ks.split(",").map((item) => {
-    return {
-      type: "Input" as const,
-      label: "phone",
-      model: "phone",
-      row: [8],
-    };
-  }),
-];
-
 const searchForm = CreateFormOption({
   form(data) {
     return [
       ...data.phone.split(",").map((item) => {
         return {
           type: "Input" as const,
-          label: "phone",
+          label: "VFor",
           model: "phone",
           row: [8],
         };
@@ -188,7 +171,7 @@ const searchFormVIf = CreateFormOption({
       label: "name",
       model: "name",
       row: [8],
-      vIf({ data }) {
+      vIf({ data, value }) {
         return data.value.showName === 1;
       },
       vDisabled({ data }) {
@@ -312,6 +295,7 @@ const searchFormRule = CreateFormOption({
       },
     },
   ],
+  api: "update",
   data: ref({
     val: "Please Input",
     obj: {
@@ -322,12 +306,20 @@ const searchFormRule = CreateFormOption({
       ],
     },
   }),
-  createRule(create) {
+  requestData(data, api) {
     return {
-      "obj.link.0.name": create.required(),
+      data: {},
+      urlParams: "",
+      // successMessage: ""
     };
   },
-  onSuccess() {
+  createRule(create, data) {
+    return {
+      "obj.link.0.name": create.required(),
+      phone: create.equal(data, "val", "obj"),
+    };
+  },
+  onSuccess(done) {
     ElMessage({
       message: "success !!!",
       type: "success",
@@ -340,4 +332,5 @@ const searchFormRule = CreateFormOption({
     });
   },
 });
+// searchFormRule.api = ''
 </script>

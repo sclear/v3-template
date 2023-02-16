@@ -14,7 +14,7 @@ export const api = {
   list: {
     method: "get",
     url: "https://mock.mengxuegu.com/mock/635605c88c53a558a4840c72/test/list",
-    _Mock_: true,
+    _Mock_: false,
     Mock: {
       total: 30,
       data: Count(10).map((_) => {
@@ -45,18 +45,6 @@ const user = {
   getIds: {
     method: "get",
     url: "url2",
-    _Mock_: true,
-    Mock: {
-      total: 30,
-      data: Count(10).map((_) => {
-        return {
-          name: Mock.Random.cname(),
-          birth: Mock.Random.date("yyyy-MM-dd"),
-          age: 20,
-          xz: Mock.Random.zip(),
-        };
-      }),
-    },
   },
 };
 

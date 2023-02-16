@@ -11,7 +11,6 @@ export default defineComponent({
       <>
         <ElDatePicker
           type="date"
-          {...(customProps || {})}
           style={{
             width: "100%",
           }}
@@ -20,9 +19,10 @@ export default defineComponent({
             emit("update:modelValue", e);
             emit("change", e, model);
           }}
-          disabled={unref(disabled)}
           modelValue={props.modelValue || (props.defaultValue as any)}
+          disabled={unref(disabled)}
           value-format="YYYY-MM-DD"
+          {...(customProps || {})}
         />
       </>
     );

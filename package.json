@@ -17,8 +17,7 @@
     "qs": "^6.11.0",
     "unocss": "^0.46.3",
     "vue": "^3.2.37",
-    "vue-router": "4",
-    "web3": "^1.8.0"
+    "vue-router": "4"
   },
   "devDependencies": {
     "@types/mockjs": "^1.0.7",
