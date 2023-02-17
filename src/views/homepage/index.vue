@@ -1,5 +1,4 @@
 <template>
-  {{ searchForm.data.value.obj }}
   <Form ref="searchFormRef" :createOption="searchForm" />
   <Table
     ref="tableRef"
@@ -14,7 +13,7 @@
 </template>
 
 <script lang="tsx" setup>
-import { ElMessage, ElCard } from "element-plus";
+import { ElMessage, ElCard, ElRow, ElCol } from "element-plus";
 import { ref } from "vue";
 import { ElButton, ElInput } from "element-plus";
 import Table, { CreateTableOption } from "./../../components/Table";
@@ -33,6 +32,23 @@ const searchForm = CreateFormOption({
       label: "姓名",
       model: "obj.link.0.name",
       row: [8],
+    },
+    {
+      row: [16],
+      children: [
+        {
+          type: "Input",
+          label: "1",
+          model: "name1",
+          row: [12],
+        },
+        {
+          type: "Input",
+          label: "2",
+          model: "name2",
+          row: [12],
+        },
+      ],
     },
     {
       type: "Input",
@@ -115,6 +131,8 @@ const searchForm = CreateFormOption({
   ],
   data: ref({
     name: "",
+    name1: "",
+    name2: "",
     age: "",
     idCard: "",
     birth: "",
@@ -130,6 +148,7 @@ const searchForm = CreateFormOption({
   createRule(create) {
     return {
       "obj.link.0.name": create.required(),
+      name1: create.required(),
     };
   },
   // labelWidth: 80,
@@ -143,6 +162,25 @@ const dialogForm = CreateFormOption({
       label: "姓名",
       model: "name",
       row: [12],
+    },
+    {
+      children: [
+        {
+          type: "Input",
+          label: "name1",
+          model: "name1",
+          row: [12],
+          createRule(create) {
+            return create.required().phone();
+          },
+        },
+        {
+          type: "Input",
+          label: "name2",
+          model: "name2",
+          row: [12],
+        },
+      ],
     },
     {
       type: "Input",
@@ -173,11 +211,15 @@ const dialogForm = CreateFormOption({
   labelWidth: 120,
   data: ref({
     name: "",
+    name1: "",
+    name2: "",
     age: "",
     birth: "",
   }),
   createRule(create) {
     return {
+      // name1: create.required(),
+      // name2: create.required(),
       name: create.must(),
       birth: create.must(),
       age: create.must(),

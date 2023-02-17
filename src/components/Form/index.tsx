@@ -17,7 +17,7 @@ import {
 import { ElForm, ElRow } from "element-plus";
 import createRules, { isCreateValidateInstance } from "./../../tools/validate";
 import { useServer } from "../../hook/useServer";
-import { CreateElForm, CreateFormOptions } from "./../FormItem";
+import { CreateElForm, CreateFormOptions, vFor } from "./../FormItem";
 export * from "./../FormItem";
 import { RuleItem } from "async-validator";
 import { ruleHelper } from "./rule.helper";
@@ -175,7 +175,7 @@ export default defineComponent({
           ruleItem,
           key,
           typeof createOption.form === "function"
-            ? createOption.form(createOption.data.value)
+            ? createOption.form({ data: createOption.data.value, vFor })
             : createOption.form
         );
       });

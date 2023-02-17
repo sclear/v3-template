@@ -1,6 +1,7 @@
 import createRules, { isCreateValidateInstance } from "./../../tools/validate";
 import { RuleItem } from "async-validator";
-import type { FormType } from "./../FormItem";
+import type { FormType, FormSettingType } from "./../FormItem";
+import { isFormGroupType } from "./../FormItem";
 
 const trigger = {
   Select: "change",
@@ -26,7 +27,16 @@ export function ruleHelper(
   form: FormType<any>[]
 ) {
   const rules = isCreateValidateInstance(rule) ? rule.rules : rule;
-  const formItem = form.find((item) => item.model === key);
+  // const formItem = form.find((item) => item.model === key);
+  let formFlat: FormSettingType<any>[] = [];
+  form.forEach((item) => {
+    if (isFormGroupType(item)) {
+      formFlat = [...formFlat, ...item.children];
+    } else {
+      formFlat.push(item);
+    }
+  });
+  const formItem = formFlat.find((item) => item.model === key);
   // 存在校验 没有实际Form
   if (!formItem) return rules;
 
@@ -45,4 +55,14 @@ export function ruleHelper(
     });
   }
   return rules;
+}
+
+function requiredGenerate(item: RuleItem, formItem: FormSettingType<any>) {
+  if (item.required === true && Object.keys(item).length === 1) {
+    return {
+      ...item,
+      trigger: trigger[formItem.type || "default"],
+      message: `${message[formItem.type || "default"]}${formItem.label || ""}`,
+    };
+  }
 }
