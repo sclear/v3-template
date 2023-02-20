@@ -17,6 +17,7 @@ interface UseServerConfig<Result, T, U> {
   urlParams?: UnwrapRef<any> | Ref<any>;
   successMessage?: string;
   errorMessage?: string;
+  headers?: any;
   onError?: (err: any) => void;
   onSuccess?: (data: T, response: ResponseData<T>) => void;
   beforeSetData?: (data: T, response: ResponseData<T>) => Result;
@@ -118,10 +119,12 @@ export function useServer<T = any, K = any, U extends object = any>(
           ? {
               params: unref(configData),
               responseType: config?.responseType || "json",
+              headers: config.headers || {},
             }
           : unref(configData),
         {
           withCredentials: true,
+          headers: config.headers || {},
         }
       )
         .then((res) => {
