@@ -75,7 +75,7 @@ export type CreateFormOptions<T = any> = {
   data: T;
   labelWidth?: number;
   api?: ApiType | Ref<ApiType>;
-  formProp?: any;
+  customProps?: any;
   tableRef?: Ref<any>;
   requestData?: (data: RefValue<T>, api: ApiType) => any;
   onChange?: (data: { value: unknown; type: string; data: T }) => void;

@@ -182,12 +182,12 @@ export default defineComponent({
       return result || {};
     }
 
-    const formProp = props.createOption.formProp || {};
+    const customProps = props.createOption.customProps || {};
     return () => (
       <>
         <ElForm
           stripe
-          {...formProp}
+          {...customProps}
           ref={elFormRef}
           labelWidth={createOption.labelWidth || 120}
           model={props.createOption.data}
