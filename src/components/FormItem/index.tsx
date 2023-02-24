@@ -77,6 +77,7 @@ export type CreateFormOptions<T = any> = {
   api?: ApiType | Ref<ApiType>;
   customProps?: any;
   tableRef?: Ref<any>;
+  loading?: Ref<boolean>;
   requestData?: (data: RefValue<T>, api: ApiType) => any;
   onChange?: (data: { value: unknown; type: string; data: T }) => void;
   onSuccess?: (done: () => void, data: RefValue<T>, requestData?: any) => void;
@@ -228,7 +229,7 @@ function renderItem(
                 justifyContent: alignGroup[align],
               }}
             >
-              {item.render("", ref(null), disabled)}
+              {item.render("", props.data, disabled)}
             </div>
           </ElCol>
         </>

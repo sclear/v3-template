@@ -28,6 +28,7 @@ export { createRules };
 export function CreateFormOption<T>(option: CreateFormOptions<T>) {
   return {
     ...option,
+    loading: ref(false),
     disabled: isRef(option.disabled)
       ? option.disabled
       : ref(option.disabled || false),
@@ -104,6 +105,7 @@ export default defineComponent({
           if (valid) {
             // if has request api
             if (createOption.api) {
+              createOption.loading!.value = true;
               const { run } = useServer({
                 api: unref(createOption.api),
                 data: requestData,
@@ -115,6 +117,7 @@ export default defineComponent({
                   : { successMessage: "操作成功" }),
 
                 onSuccess(resp, res) {
+                  createOption.loading!.value = false;
                   if (res.code === 200) {
                     // createOption.onSuccess
                     //   ? createOption.onSuccess(
@@ -137,6 +140,7 @@ export default defineComponent({
                   }
                 },
                 onError() {
+                  createOption.loading!.value = false;
                   done && done(false);
                   createOption.onError && createOption.onError(done);
                 },
