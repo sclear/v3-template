@@ -1,9 +1,3 @@
-import Mock from "mockjs";
-
-function Count(num: number) {
-  return new Array(num).fill(" ");
-}
-
 import { createApi } from "@/hook/useServer/lib/store";
 
 export const api = {
@@ -17,14 +11,7 @@ export const api = {
     _Mock_: false,
     Mock: {
       total: 30,
-      data: Count(10).map((_) => {
-        return {
-          name: Mock.Random.cname(),
-          birth: Mock.Random.date("yyyy-MM-dd"),
-          age: 20,
-          xz: Mock.Random.zip(),
-        };
-      }),
+      data: [],
     },
   },
   createUser: {

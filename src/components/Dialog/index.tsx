@@ -35,6 +35,10 @@ export default defineComponent({
       type: Boolean,
       default: () => false,
     },
+    freeze: {
+      type: Boolean,
+      default: () => false,
+    },
   },
   emits: {
     valid: () => void 0,
@@ -62,7 +66,7 @@ export default defineComponent({
     function closeModel() {
       buttonLoading.value = true;
       // form联动
-      if (formInstance.value) {
+      if (formInstance.value && !props.freeze) {
         formInstance.value?.exposed?.validate &&
           formInstance.value?.exposed?.validate((isClose?: boolean) => {
             if (isClose || isClose === undefined) {

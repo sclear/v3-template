@@ -144,7 +144,6 @@ export default defineComponent({
     });
 
     const search = (pager: boolean = false) => {
-      console.log("in");
       if (pager) {
         pagination.currentPage = 1;
         pagination.pageSize = 10;
