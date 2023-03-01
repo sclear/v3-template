@@ -7,7 +7,7 @@
     class="mt-2"
   >
     <Dialog :width="900" ref="dialogRef">
-      <Form :createOption="dialogForm" />
+      <Form :freeze="true" :createOption="dialogForm" />
     </Dialog>
   </Table>
 </template>

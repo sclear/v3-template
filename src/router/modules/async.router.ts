@@ -5,6 +5,7 @@ export const asyncRoutes: RouteRecordRaw[] = [
     path: "/homepage",
     meta: {
       title: "主页",
+      permission: false,
     },
     component: () => import("@/views/homepage/index.vue"),
   },
@@ -12,6 +13,7 @@ export const asyncRoutes: RouteRecordRaw[] = [
     path: "/test",
     meta: {
       title: "test",
+      permission: false,
     },
     component: () => import("@/views/test/index.vue"),
   },
@@ -19,6 +21,7 @@ export const asyncRoutes: RouteRecordRaw[] = [
     path: "/form",
     meta: {
       title: "Form",
+      permission: false,
     },
     component: () => import("@/views/form/index.vue"),
   },
@@ -26,6 +29,7 @@ export const asyncRoutes: RouteRecordRaw[] = [
     path: "/dialog",
     meta: {
       title: "Dialog",
+      permission: false,
     },
     component: () => import("@/views/dialog/index.vue"),
   },
@@ -33,6 +37,7 @@ export const asyncRoutes: RouteRecordRaw[] = [
     path: "/table",
     meta: {
       title: "Table",
+      permission: false,
     },
     component: () => import("@/views/table/index.vue"),
   },

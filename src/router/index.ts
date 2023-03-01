@@ -14,11 +14,18 @@ const router = createRouter({
   routes: [
     {
       path: "/",
+      alias: "/login",
       name: "login",
       component: () => import("@/views/login/index.vue"),
     },
   ],
 });
+
+const NotFound = {
+  path: "/:catchAll(.*)",
+  name: "404",
+  component: () => import("@/views/404/index.vue"),
+};
 
 let isFirst = true;
 
@@ -37,8 +44,8 @@ router.beforeEach(async (to, from, next) => {
     if (isFirst) {
       isFirst = false;
       const routes = await setting.registerRoute();
-      console.log(routes);
       router.addRoute(routes);
+      router.addRoute(NotFound);
       return next({ ...to, replace: true });
     }
     // 新增tabs

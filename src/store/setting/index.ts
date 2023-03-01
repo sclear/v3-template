@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { asyncRoutes, wrapRoutes } from "@/router/modules/async.router";
 import { activeRoutes } from "@/router/modules/active.router";
 import router from "@/router";
+import { listToTree } from "@/tools/util";
 
 interface MenuItem {
   path: string;
@@ -30,6 +31,48 @@ const defaultTab = {
   name: "/homepage",
 };
 
+const menuJson = [
+  {
+    title: "演示列表",
+    icon: "",
+    path: "",
+    parentId: 0,
+    id: 1,
+  },
+  {
+    title: "Form",
+    icon: "",
+    path: "/form",
+    name: "/form",
+    parentId: 1,
+    id: 2,
+  },
+  {
+    title: "Dialog",
+    icon: "",
+    path: "/dialog",
+    name: "/dialog",
+    parentId: 1,
+    id: 3,
+  },
+  {
+    title: "Table",
+    icon: "",
+    path: "/table",
+    name: "/table",
+    parentId: 1,
+    id: 4,
+  },
+  {
+    title: "组合演示",
+    icon: "",
+    path: "/homepage",
+    name: "/homepage",
+    parentId: 0,
+    id: 5,
+  },
+];
+
 export const useSetting = defineStore<string, SettingState, any, any>(
   "setting",
   {
@@ -39,39 +82,7 @@ export const useSetting = defineStore<string, SettingState, any, any>(
       // current tab
       currentTab: "/homepage",
       // menus
-      menus: [
-        {
-          title: "演示列表",
-          icon: "",
-          path: "tem",
-          children: [
-            {
-              title: "Form",
-              icon: "",
-              path: "/form",
-              name: "/form",
-            },
-            {
-              title: "Dialog",
-              icon: "",
-              path: "/dialog",
-              name: "/dialog",
-            },
-            {
-              title: "Table",
-              icon: "",
-              path: "/table",
-              name: "/table",
-            },
-          ],
-        },
-        {
-          title: "组合演示",
-          icon: "",
-          path: "/homepage",
-          name: "/homepage",
-        },
-      ],
+      menus: [],
 
       // token
       token: "xxx",
@@ -133,15 +144,26 @@ export const useSetting = defineStore<string, SettingState, any, any>(
 
         this.currentTab = activeName;
       },
-      // 设置菜单
-      setMenu(menus: any[]) {
-        this.menus = menus;
-      },
 
       // register route
       registerRoute() {
         return new Promise((resolve, reject) => {
-          resolve(wrapRoutes([...activeRoutes, ...asyncRoutes]));
+          const menuJsonPaths = menuJson.map((item) => item.path);
+          const registerRoutes = asyncRoutes.filter((item: any) => {
+            return (
+              item.meta.permission === false ||
+              menuJsonPaths.includes(item.path)
+            );
+          });
+          this.menus = listToTree(
+            menuJson.map((item) => ({
+              ...item,
+              path: item.path || item.id,
+              name: item.path || item.id,
+            })),
+            0
+          );
+          resolve(wrapRoutes([...activeRoutes, ...registerRoutes]));
         });
       },
     },

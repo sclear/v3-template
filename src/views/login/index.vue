@@ -57,39 +57,6 @@ const createLoginForm = CreateFormOption({
     },
   ],
   onSuccess() {
-    setting.setMenu([
-      {
-        title: "演示列表",
-        icon: "",
-        path: "tem",
-        children: [
-          {
-            title: "Form",
-            icon: "",
-            path: "/form",
-            name: "/form",
-          },
-          {
-            title: "Dialog",
-            icon: "",
-            path: "/dialog",
-            name: "/dialog",
-          },
-          {
-            title: "Table",
-            icon: "",
-            path: "/table",
-            name: "/table",
-          },
-        ],
-      },
-      {
-        title: "组合演示",
-        icon: "",
-        path: "/homepage",
-        name: "/homepage",
-      },
-    ]);
     router.push({
       path: "/homepage",
     });
