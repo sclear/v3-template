@@ -57,6 +57,7 @@ const createLoginForm = CreateFormOption({
     },
   ],
   onSuccess() {
+    setting.setToken("001");
     router.push({
       path: "/homepage",
     });

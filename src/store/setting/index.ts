@@ -85,7 +85,7 @@ export const useSetting = defineStore<string, SettingState, any, any>(
       menus: [],
 
       // token
-      token: "xxx",
+      token: "",
     }),
 
     getters: {
@@ -165,6 +165,10 @@ export const useSetting = defineStore<string, SettingState, any, any>(
           );
           resolve(wrapRoutes([...activeRoutes, ...registerRoutes]));
         });
+      },
+
+      setToken(token: string) {
+        this.token = token;
       },
     },
 

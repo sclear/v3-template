@@ -28,9 +28,9 @@ import Container from "./components/Container/index.vue";
   width: 200px;
   min-height: 400px;
 }
-.container {
-  height: 100vh;
-}
+// .container {
+//   height: 100vh;
+// }
 .el-header {
   background-color: #409eff;
   //   color: #333;
