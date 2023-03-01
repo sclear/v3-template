@@ -34,23 +34,6 @@ const searchForm = CreateFormOption({
       row: [8],
     },
     {
-      row: [16],
-      children: [
-        {
-          type: "Input",
-          label: "1",
-          model: "name1",
-          row: [12],
-        },
-        {
-          type: "Input",
-          label: "2",
-          model: "name2",
-          row: [12],
-        },
-      ],
-    },
-    {
       type: "Input",
       label: "电话号码",
       model: "phone",

@@ -1,11 +1,12 @@
 <template>
   <ElContainer class="h-100vh">
-    <ElAside width="200px">
-      <Logo />
-      <Menu />
-    </ElAside>
+    <ElHeader>
+      <Header />
+    </ElHeader>
     <ElContainer>
-      <ElHeader></ElHeader>
+      <ElAside width="200px">
+        <Menu />
+      </ElAside>
       <ElMain>
         <Tabs />
         <Container />
@@ -17,7 +18,7 @@
 <script lang="ts" setup>
 import { ElContainer, ElAside, ElMain, ElHeader } from "element-plus";
 import Menu from "./components/Menu/index.vue";
-import Logo from "./components/Logo/index.vue";
+import Header from "./components/Header/index.vue";
 import Tabs from "./components/Tabs/index.vue";
 import Container from "./components/Container/index.vue";
 </script>
