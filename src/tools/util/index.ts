@@ -58,3 +58,17 @@ export const setValueByPath = function (object: any, prop: string, v: any) {
   }
   return result;
 };
+
+export function listToTree<T extends any[]>(arr: T, parentId: any) {
+  function loop(parentId: any) {
+    return arr.reduce((pre, cur) => {
+      if (cur.parentId === parentId) {
+        cur.children = loop(cur.id);
+        pre.push(cur);
+      }
+
+      return pre;
+    }, []);
+  }
+  return loop(parentId);
+}
