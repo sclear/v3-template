@@ -32,14 +32,14 @@ const createLoginForm = CreateFormOption({
       },
     },
     {
-      label: "user",
       model: "user",
       type: "Input",
+      placeholder: "admin",
     },
     {
-      label: "pass",
       model: "pass",
       type: "Input",
+      placeholder: "password",
     },
     {
       align: "center",
@@ -68,6 +68,6 @@ const createLoginForm = CreateFormOption({
       pass: create.must("请输入password"),
     };
   },
-  labelWidth: 40,
+  labelWidth: 1,
 });
 </script>

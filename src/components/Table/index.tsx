@@ -3,8 +3,12 @@ import type { PropType } from "vue";
 import "./index.less";
 import { ElTable, ElPagination, ElTableColumn } from "element-plus";
 import { omit } from "../../tools/util";
-import { useServer, ApiType } from "../../hook/useServer";
+import { useServer, ApiType, UseServerConfig } from "../../hook/useServer";
 
+type UseServerProps = Pick<
+  UseServerConfig<any, any, any>,
+  "beforeSetData" | "headers" | "autoRun" | "data" | "urlParams" | "default"
+>;
 interface SlotsParams {
   row: any[];
   $index: any[];
@@ -28,6 +32,7 @@ interface CreateTable {
   pagination?: boolean | ((pagination: Pagination) => any);
   total?: (res: any) => number;
   autoRun?: boolean;
+  useServerProps: UseServerProps;
 }
 
 // 生成Table数据
@@ -131,6 +136,7 @@ export default defineComponent({
         function (res) {
           return res || [];
         },
+      ...(props.createOption.useServerProps || {}),
       onSuccess(res) {
         if (
           props.createOption.pagination ||

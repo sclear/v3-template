@@ -9,7 +9,7 @@ const { getApiModule } = serverSetting;
 type InputApi = Parameters<typeof getApiModule>[0];
 
 export type ApiType = InputApi;
-interface UseServerConfig<Result, T, U> {
+export interface UseServerConfig<Result, T, U> {
   api: InputApi | Ref<InputApi>;
   data?: U;
   default?: any;
