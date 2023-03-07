@@ -1,8 +1,9 @@
-import { onMounted, ref, unref, UnwrapRef, Ref, isRef } from "vue";
+import { onMounted, ref, unref, UnwrapRef, Ref, isRef, watch } from "vue";
 import { request } from "./lib";
 import { ResponseData, Code, IfAny } from "./lib/index.type";
 import serverSetting from "./../../server/index";
 import { ElMessage } from "element-plus";
+import { useDebounceFn, useThrottleFn } from "@vueuse/core";
 
 const { getApiModule } = serverSetting;
 
@@ -18,6 +19,10 @@ export interface UseServerConfig<Result, T, U> {
   successMessage?: string;
   errorMessage?: string;
   headers?: any;
+  onConditionChange?: boolean;
+  deps?: any[];
+  throttleTime?: number;
+  debounceTime?: number;
   onError?: (err: any) => void;
   onSuccess?: (data: T, response: ResponseData<T>) => void;
   beforeSetData?: (data: T, response: ResponseData<T>) => Result;
@@ -154,6 +159,25 @@ export function useServer<T = any, K = any, U extends object = any>(
 
   config?.autoRun && run();
 
+  let computedRun = run;
+  if (config.throttleTime) {
+    computedRun = useThrottleFn(run, config.throttleTime);
+  } else if (config.debounceTime) {
+    computedRun = useDebounceFn(run, config.debounceTime);
+  }
+
+  // deps
+  if (config.onConditionChange || config.deps) {
+    const deps = [
+      ...(config.onConditionChange ? [configData.value, configUrlParams] : []),
+      ...(config.deps || []),
+    ];
+    watch(deps, () => computedRun(), {
+      deep: true,
+      immediate: true,
+    });
+  }
+
   return {
     /**
      * @Description 应用数据Data
@@ -174,7 +198,7 @@ export function useServer<T = any, K = any, U extends object = any>(
      * @Description 触发器
      * @param {Function}
      */
-    run,
+    run: computedRun,
     /**
      * @Description config
      * @param {Object}

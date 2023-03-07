@@ -32,7 +32,7 @@ interface CreateTable {
   pagination?: boolean | ((pagination: Pagination) => any);
   total?: (res: any) => number;
   autoRun?: boolean;
-  useServerProps: UseServerProps;
+  useServerProps?: UseServerProps;
 }
 
 // 生成Table数据
