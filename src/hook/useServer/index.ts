@@ -10,7 +10,7 @@ const { getApiModule } = serverSetting;
 type InputApi = Parameters<typeof getApiModule>[0];
 
 export type ApiType = InputApi;
-export interface UseServerConfig<Result, T, U> {
+export interface UseServerConfig<Result, T, U extends string | object> {
   api: InputApi | Ref<InputApi>;
   data?: U;
   default?: any;
@@ -19,7 +19,7 @@ export interface UseServerConfig<Result, T, U> {
   successMessage?: string;
   errorMessage?: string;
   headers?: any;
-  onConditionChange?: boolean;
+  depsCondition?: boolean;
   deps?: any[];
   throttleTime?: number;
   debounceTime?: number;
@@ -60,7 +60,7 @@ interface UseServerReturn<Result, U> {
 
 type ResultData<T, K> = IfAny<K, T, K>;
 
-export function useServer<T = any, K = any, U extends object = any>(
+export function useServer<T = any, K = any, U extends object | string = any>(
   config: UseServerConfig<ResultData<T, K>, T, U>
 ): UseServerReturn<ResultData<T, K>, U> {
   const data = ref(config?.default || []);
@@ -73,7 +73,7 @@ export function useServer<T = any, K = any, U extends object = any>(
    */
   const configApi = isRef(config.api) ? config.api : ref(config.api);
 
-  const dataSource = isObject(config.data) ? config.data : ({} as any);
+  const dataSource = isObject(config.data) ? config.data : (config.data as any);
   const configData = isRef(dataSource) ? dataSource : ref(dataSource);
 
   /**
@@ -167,14 +167,13 @@ export function useServer<T = any, K = any, U extends object = any>(
   }
 
   // deps
-  if (config.onConditionChange || config.deps) {
+  if (config.depsCondition || config.deps) {
     const deps = [
-      ...(config.onConditionChange ? [configData.value, configUrlParams] : []),
+      ...(config.depsCondition ? [configData.value, configUrlParams] : []),
       ...(config.deps || []),
     ];
     watch(deps, () => computedRun(), {
       deep: true,
-      immediate: true,
     });
   }
 
