@@ -1,5 +1,5 @@
 import { computed, defineComponent, reactive, ref, unref, provide } from "vue";
-import type { PropType } from "vue";
+import type { PropType, Ref } from "vue";
 import "./index.less";
 import { ElTable, ElPagination, ElTableColumn } from "element-plus";
 import { omit } from "../../tools/util";
@@ -25,7 +25,7 @@ type Pagination = {
 };
 
 interface CreateTable {
-  api: ApiType;
+  api?: ApiType;
   column: Column[];
   beforeSetData?: any;
   customProps?: any;
@@ -33,11 +33,16 @@ interface CreateTable {
   total?: (res: any) => number;
   autoRun?: boolean;
   useServerProps?: UseServerProps;
+  data?: Ref<any[]>;
 }
 
 // 生成Table数据
-export function CreateTableOption(option: CreateTable): CreateTable {
-  return option;
+export function CreateTableOption(option: CreateTable) {
+  return {
+    data: ref<any[]>([]),
+    ...option,
+    run() {},
+  };
 }
 
 // 递归解析tableHeader
@@ -82,7 +87,7 @@ interface Column {
 export default defineComponent({
   props: {
     createOption: {
-      type: Object as PropType<CreateTable>,
+      type: Object as PropType<ReturnType<typeof CreateTableOption>>,
       default: [],
     },
     beforeSetData: {
@@ -125,12 +130,13 @@ export default defineComponent({
       };
     });
     const { loading, run, data } = useServer({
-      api: props.createOption.api,
+      api: props.createOption.api || ("" as any),
       data: params,
-      autoRun:
-        typeof props.createOption.autoRun === "boolean"
+      autoRun: props.createOption.api
+        ? typeof props.createOption.autoRun === "boolean"
           ? props.createOption.autoRun
-          : true,
+          : true
+        : false,
       beforeSetData:
         props.createOption.beforeSetData ||
         function (res) {
@@ -138,6 +144,7 @@ export default defineComponent({
         },
       ...(props.createOption.useServerProps || {}),
       onSuccess(res) {
+        props.createOption.data.value = data.value;
         if (
           props.createOption.pagination ||
           props.createOption.pagination === undefined
@@ -148,6 +155,8 @@ export default defineComponent({
         }
       },
     });
+
+    props.createOption.run = run;
 
     const search = (pager: boolean = false) => {
       if (pager) {
@@ -169,7 +178,7 @@ export default defineComponent({
     return () => (
       <div v-loading={loading.value}>
         <ElTable
-          data={data.value}
+          data={unref(props.createOption.data)}
           border
           {...(props.createOption.customProps || {})}
         >

@@ -1,6 +1,6 @@
 <template>
   <Form ref="searchFormRef" :createOption="searchForm" />
-  <Table
+  <!-- <Table
     ref="tableRef"
     :createOption="tableOption"
     :search-params="searchForm.data"
@@ -9,7 +9,7 @@
     <Dialog :width="900" ref="dialogRef">
       <Form :freeze="true" :createOption="dialogForm" />
     </Dialog>
-  </Table>
+  </Table> -->
 </template>
 
 <script lang="tsx" setup>
@@ -19,6 +19,8 @@ import { ElButton, ElInput } from "element-plus";
 import Table, { CreateTableOption } from "./../../components/Table";
 import Form, { CreateFormOption } from "./../../components/Form/index";
 import Dialog from "./../../components/Dialog";
+import { useServer } from "./../../hook/useServer";
+// import qs from 'qs'
 
 const dialogRef = ref();
 const searchFormRef = ref();

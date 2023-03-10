@@ -189,20 +189,16 @@ export default defineComponent({
 
     const customProps = props.createOption.customProps || {};
     return () => (
-      <>
-        <ElForm
-          stripe
-          {...customProps}
-          ref={elFormRef}
-          labelWidth={createOption.labelWidth || 120}
-          model={props.createOption.data}
-          rules={calcRules(formRules || {})}
-        >
-          <ElRow>
-            {CreateElForm(createOption, props.createOption, dialog)}
-          </ElRow>
-        </ElForm>
-      </>
+      <ElForm
+        stripe
+        {...customProps}
+        ref={elFormRef}
+        labelWidth={createOption.labelWidth || 120}
+        model={props.createOption.data}
+        rules={calcRules(formRules || {})}
+      >
+        <ElRow>{CreateElForm(createOption, props.createOption, dialog)}</ElRow>
+      </ElForm>
     );
   },
 });
