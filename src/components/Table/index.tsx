@@ -78,6 +78,7 @@ interface Column {
   prop?: string;
   label?: string;
   customProps?: Record<string, unknown>;
+  children?: Column[];
   render?: (
     text: string,
     row: any,
