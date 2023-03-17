@@ -14,6 +14,7 @@ export type FormType<T> = FormGroupType<T> | FormSettingType<T>;
 type FormGroupType<T> = {
   children: FormSettingType<T>[];
   row?: number[];
+  vIf?: (args: { value: unknown; model: string; data: T }) => boolean;
 };
 
 export function isFormGroupType(formItem: any): formItem is FormGroupType<any> {
@@ -112,12 +113,26 @@ export function CreateElForm(
         if (item) {
           // render group
           if (isFormGroupType(item)) {
-            const row = item.row || [24, 0];
+            // computed v-if
+            const vif = computed(() => {
+              console.log(item.vIf);
+              if (
+                (item.vIf &&
+                  item.vIf({ data: props.data, value: "", model: "" })) ||
+                item.vIf === undefined
+              ) {
+                return true;
+              }
+              return false;
+            });
+            if (!vif.value) return "";
 
+            const row = item.row || [24, 0];
             return (
               <ElCol
                 style={{
                   display: "flex",
+                  "flex-wrap": "wrap",
                 }}
                 span={row[0] || 24}
                 offset={row[1] || 0}
