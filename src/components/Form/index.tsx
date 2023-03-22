@@ -105,61 +105,59 @@ export default defineComponent({
 
     expose({
       validate(done: (isClose?: boolean) => void) {
-        elFormRef.value.validate((valid: boolean) => {
-          if (valid) {
-            // if has request api
-            if (createOption.api) {
-              createOption.loading!.value = true;
-              const { run } = useServer({
-                api: unref(createOption.api),
-                data: requestData,
-                ...(createOption.requestData
-                  ? createOption.requestData(
-                      unref(createOption.data),
-                      unref(createOption.api)
-                    )
-                  : { successMessage: "操作成功" }),
-
-                onSuccess(resp, res) {
-                  createOption.loading!.value = false;
-                  if (res.code === 200) {
-                    // createOption.onSuccess
-                    //   ? createOption.onSuccess(
-                    //       done,
-                    //       unref(createOption.data),
-                    //       res
-                    //     )
-                    //   : (done(); tableRun?.run())
-                    if (createOption.onSuccess) {
-                      createOption.onSuccess(
-                        done,
+        return new Promise((resolve, reject) => {
+          elFormRef.value.validate((valid: boolean) => {
+            if (valid) {
+              // if has request api
+              if (createOption.api) {
+                createOption.loading!.value = true;
+                const { run } = useServer({
+                  api: unref(createOption.api),
+                  data: requestData,
+                  ...(createOption.requestData
+                    ? createOption.requestData(
                         unref(createOption.data),
-                        res
-                      );
-                    } else {
-                      done();
-                      if (!props.freeze) {
-                        tableRun?.run && tableRun?.run();
+                        unref(createOption.api)
+                      )
+                    : { successMessage: "操作成功" }),
+
+                  onSuccess(resp, res) {
+                    createOption.loading!.value = false;
+                    if (res.code === 200) {
+                      if (createOption.onSuccess) {
+                        createOption.onSuccess(
+                          done,
+                          unref(createOption.data),
+                          res
+                        );
+                      } else {
+                        done();
+                        if (!props.freeze) {
+                          tableRun?.run && tableRun?.run();
+                        }
                       }
+                      reset();
                     }
-                    reset();
-                  }
-                },
-                onError() {
-                  createOption.loading!.value = false;
-                  done && done(false);
-                  createOption.onError && createOption.onError(done);
-                },
-              });
-              run();
-              return;
+                  },
+                  onError() {
+                    createOption.loading!.value = false;
+                    done && done(false);
+                    createOption.onError && createOption.onError(done);
+                  },
+                });
+                run();
+                return;
+              }
+              createOption.onSuccess &&
+                createOption.onSuccess(done, unref(createOption.data.value));
+            } else {
+              done && done(false);
+              createOption.onError && createOption.onError(done);
             }
-            createOption.onSuccess &&
-              createOption.onSuccess(done, unref(createOption.data.value));
-          } else {
-            done && done(false);
-            createOption.onError && createOption.onError(done);
-          }
+            if (!createOption.api) {
+              resolve(valid);
+            }
+          });
         });
       },
       reset,
@@ -167,7 +165,7 @@ export default defineComponent({
 
     let formRules =
       createOption.createRule &&
-      createOption.createRule(createRules, createOption.data);
+      createOption.createRule(createRules, unref(createOption.data));
 
     function calcRules(rules: Record<string, RuleItem[] | typeof createRules>) {
       // rule result

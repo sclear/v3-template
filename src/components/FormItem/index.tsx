@@ -57,7 +57,7 @@ export type FormSettingType<T> = {
   defaultValue?: (data: T) => any;
   createRule?: (
     ruleInstance: typeof createRules,
-    data: T
+    data: RefValue<T>
   ) => RuleItem[] | typeof createRules;
 };
 /**
@@ -85,7 +85,7 @@ export type CreateFormOptions<T = any> = {
   onError?: (done: () => void) => void;
   createRule?: (
     ruleInstance: typeof createRules,
-    data: T
+    data: RefValue<T>
   ) => Record<string, RuleItem[] | typeof createRules>;
 };
 
@@ -167,7 +167,7 @@ function renderItem(
   let rule: { rules?: any } = {};
 
   if (item.createRule) {
-    const ruleOrInstanceRule = item.createRule(createRules, option.data.value);
+    const ruleOrInstanceRule = item.createRule(createRules, unref(option.data));
     rule.rules = ruleHelper(ruleOrInstanceRule, item.model || "", [item]);
   }
 
