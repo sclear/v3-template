@@ -17,7 +17,7 @@ import {
 import { ElForm, ElRow } from "element-plus";
 import createRules, { isCreateValidateInstance } from "./../../tools/validate";
 import { useServer } from "../../hook/useServer";
-import { CreateElForm, CreateFormOptions, vFor } from "./../FormItem";
+import { CreateElForm, CreateFormOptions, vFor, RefValue } from "./../FormItem";
 export * from "./../FormItem";
 import { RuleItem } from "async-validator";
 import { ruleHelper } from "./rule.helper";
@@ -25,13 +25,21 @@ import { omit } from "@/tools/util";
 
 export { createRules };
 
-export function CreateFormOption<T>(option: CreateFormOptions<T>) {
+export function CreateFormOption<T = any, K extends keyof RefValue<T> = never>(
+  option: CreateFormOptions<T, K>
+) {
   return {
     ...option,
     loading: ref(false),
     disabled: isRef(option.disabled)
       ? option.disabled
       : ref(option.disabled || false),
+    omitData: computed(() => {
+      return omit(
+        unref(option.data) as RefValue<T>,
+        (option.omit || []) as K[]
+      );
+    }),
   };
 }
 

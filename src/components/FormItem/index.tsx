@@ -65,15 +65,16 @@ export type FormSettingType<T> = {
  * U : omit
  */
 
-type RefValue<T> = T extends Ref<infer A> ? A : T;
+export type RefValue<T> = T extends Ref<infer A> ? A : T;
 
-export type CreateFormOptions<T = any> = {
+export type CreateFormOptions<T = any, K = unknown> = {
   form:
     | FormType<T>[]
     | ((formOption: { data: RefValue<T>; vFor: typeof vFor }) => FormType<T>[]);
   disabled?: Ref<boolean> | undefined;
   type?: any;
   data: T;
+  omit?: K[];
   labelWidth?: number;
   api?: ApiType | Ref<ApiType>;
   customProps?: any;
