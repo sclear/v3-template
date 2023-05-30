@@ -169,6 +169,9 @@ export default defineComponent({
         });
       },
       reset,
+      resetFields(e: any) {
+        elFormRef.value.resetFields(e);
+      },
     });
 
     let formRules =
