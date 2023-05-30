@@ -86,6 +86,8 @@ export const useSetting = defineStore<string, SettingState, any, any>(
 
       // token
       token: "",
+
+      isCollapse: false,
     }),
 
     getters: {
@@ -169,6 +171,9 @@ export const useSetting = defineStore<string, SettingState, any, any>(
 
       setToken(token: string) {
         this.token = token;
+      },
+      changeCollapse() {
+        this.isCollapse = !this.isCollapse;
       },
     },
 

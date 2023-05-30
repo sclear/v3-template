@@ -1,18 +1,26 @@
 <template>
-  <ElMenu
-    :default-active="setting.currentTab"
-    :router="true"
-    class="el-menu-vertical-demo"
-    :collapse="isCollapse"
-    @open="handleOpen"
-    @close="handleClose"
-  >
-    <MenuItem :menus="setting.menus" />
-  </ElMenu>
+  <div class="w-full relative el-menu-height">
+    <ElMenu
+      :default-active="setting.currentTab"
+      :router="true"
+      :collapse="setting.isCollapse"
+      @open="handleOpen"
+      @close="handleClose"
+    >
+      <MenuItem :menus="setting.menus" />
+    </ElMenu>
+    <div
+      @click="setting.changeCollapse"
+      class="absolute left-0px bottom-0px w-full h-40px lh-40px bg-#E4EFFF cursor-pointer"
+    >
+      {{ !setting.isCollapse ? "《" : "》" }}
+    </div>
+  </div>
 </template>
 <script lang="ts" setup>
 import { ref } from "vue";
-import { ElMenu } from "element-plus";
+import { ElMenu, ElIcon } from "element-plus";
+import { ArrowLeft } from "@element-plus/icons-vue";
 import MenuItem from "./menuItem";
 import { useSetting } from "@/store/setting";
 
@@ -26,8 +34,11 @@ const handleClose = (key: string, keyPath: string[]) => {};
 </script>
 
 <style lang="less">
-.el-menu-vertical-demo {
-  width: 200px;
+.el-menu-height {
+  // width: 200px;
+  min-height: calc(100vh - 60px) !important;
+}
+.el-menu {
   min-height: calc(100vh - 60px) !important;
 }
 </style>

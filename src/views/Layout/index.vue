@@ -4,7 +4,7 @@
       <Header />
     </ElHeader>
     <ElContainer>
-      <ElAside width="200px">
+      <ElAside width="auto">
         <Menu />
       </ElAside>
       <ElMain>
@@ -41,7 +41,7 @@ import Container from "./components/Container/index.vue";
 
 .el-aside {
   text-align: center;
-  line-height: 200px;
+  // line-height: 200px;
 }
 
 .el-main {

@@ -29,7 +29,7 @@ function renderMenuItems(menus?: MenuItem[]): Array<JSX.Element> | undefined {
                       <ElIcon>
                         <Grid />
                       </ElIcon>{" "}
-                      {item.title}
+                      <span>{item.title}</span>
                     </>
                   );
                 },
@@ -47,7 +47,7 @@ function renderMenuItems(menus?: MenuItem[]): Array<JSX.Element> | undefined {
             <ElIcon>
               <Document />
             </ElIcon>{" "}
-            {item.title}{" "}
+            <span>{item.title}</span>{" "}
           </ElMenuItem>
         </>
       );
