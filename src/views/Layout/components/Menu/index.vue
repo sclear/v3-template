@@ -6,6 +6,7 @@
       :collapse="setting.isCollapse"
       @open="handleOpen"
       @close="handleClose"
+      class="el-menu-vertical-demo"
     >
       <MenuItem :menus="setting.menus" />
     </ElMenu>
@@ -38,7 +39,12 @@ const handleClose = (key: string, keyPath: string[]) => {};
   // width: 200px;
   min-height: calc(100vh - 60px) !important;
 }
-.el-menu {
-  min-height: calc(100vh - 60px) !important;
+.w-full {
+  & > .el-menu {
+    min-height: calc(100vh - 60px) !important;
+  }
+}
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+  width: 200px;
 }
 </style>

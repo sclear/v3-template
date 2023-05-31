@@ -1,25 +1,27 @@
 <template>
+  <!-- {{ searchForm.omitData }} -->
   <Form ref="searchFormRef" :createOption="searchForm" />
-  <!-- <Table
+  <Table
     ref="tableRef"
     :createOption="tableOption"
-    :search-params="searchForm.data"
+    :search-params="searchForm.omitData"
     class="mt-2"
   >
     <Dialog :width="900" ref="dialogRef">
       <Form :freeze="true" :createOption="dialogForm" />
     </Dialog>
-  </Table> -->
+  </Table>
 </template>
 
 <script lang="tsx" setup>
 import { ElMessage, ElCard, ElRow, ElCol } from "element-plus";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { ElButton, ElInput } from "element-plus";
 import Table, { CreateTableOption } from "./../../components/Table";
 import Form, { CreateFormOption } from "./../../components/Form/index";
 import Dialog from "./../../components/Dialog";
 import { useServer } from "./../../hook/useServer";
+import { omit } from "lodash";
 // import qs from 'qs'
 
 const dialogRef = ref();
@@ -28,11 +30,12 @@ const tableRef = ref();
 
 const searchForm = CreateFormOption({
   tableRef,
+  omit: ["name"],
   form: [
     {
       type: "Input",
       label: "姓名",
-      model: "obj.link.0.name",
+      model: "name",
       row: [8],
     },
     {
@@ -116,19 +119,10 @@ const searchForm = CreateFormOption({
   ],
   data: ref({
     name: "",
-    name1: "",
-    name2: "",
-    age: "",
+    age: "111",
     idCard: "",
     birth: "",
     phone: "",
-    obj: {
-      link: [
-        {
-          o: "",
-        },
-      ],
-    },
   }),
   createRule(create) {
     return {
