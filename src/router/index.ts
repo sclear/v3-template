@@ -1,12 +1,6 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import { useSetting } from "@/store/setting";
 import { activeRoutes } from "./modules/active.router";
-interface Tab {
-  path: string;
-  query: any;
-  title: string;
-  name: string;
-}
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -50,14 +44,14 @@ router.beforeEach(async (to, from, next) => {
     }
     // 新增tabs
     if (
-      setting.flatMenu.some((tab: Tab) => tab.path === to.path) ||
+      setting.flatMenu.some((tab) => tab.path === to.path) ||
       activeRoutes.some((route) => route.path === to.path)
     ) {
       setting.addTab({
         path: to.path,
         query: to.query,
-        title: to.meta.title,
-        name: to?.meta?.activeMenu || to.path,
+        title: to.meta.title as string,
+        name: (to?.meta?.activeMenu as string) || (to.path as string),
       });
     }
     return next();

@@ -3,6 +3,7 @@ import { asyncRoutes, wrapRoutes } from "@/router/modules/async.router";
 import { activeRoutes } from "@/router/modules/active.router";
 import router from "@/router";
 import { listToTree } from "@/tools/util";
+import { reactive, toRefs } from "vue";
 
 interface MenuItem {
   path: string;
@@ -14,8 +15,8 @@ interface MenuItem {
 interface Tab {
   path: string;
   query: any;
-  title: string;
-  name: string;
+  title?: string;
+  name?: string;
 }
 
 interface SettingState {
@@ -73,110 +74,124 @@ const menuJson = [
   },
 ];
 
-export const useSetting = defineStore<string, SettingState, any, any>(
+export const useSetting = defineStore(
   "setting",
-  {
-    state: () => ({
+  () => {
+    const state = reactive({
       // tabs
       tabs: [defaultTab],
       // current tab
       currentTab: "/homepage",
       // menus
-      menus: [],
+      menus: [] as MenuItem[],
 
       // token
       token: "",
 
       isCollapse: false,
-    }),
 
-    getters: {
-      flatMenu(state: SettingState): any[] {
-        const menus: MenuItem[] = [];
-        function findTab(menu: MenuItem[]) {
-          menu.forEach((item) => {
-            if (item.children && item.children.length) {
-              findTab(item.children);
-            } else {
-              menus.push({
-                ...item,
-              });
-            }
-          });
+      flatMenu: [] as MenuItem[],
+    });
+
+    // tab新增
+    function addTab(tab: Tab) {
+      const isRepetition = state.tabs.some((item: Tab) => {
+        if (item.path === tab.path) {
+          state.currentTab = tab.name;
+          item.query = tab.query;
         }
-        findTab(state.menus);
-        return menus;
-      },
-    },
+        return item.path === tab.path;
+      });
+      if (isRepetition) return;
+      state.tabs.push(tab);
+      state.currentTab = tab.name;
+    }
 
-    actions: {
-      addTab(tab: Tab) {
-        const isRepetition = this.tabs.some((item: Tab) => {
-          if (item.path === tab.path) {
-            this.currentTab = tab.name;
-            item.query = tab.query;
+    // tab删除
+    function removeTab(targetName: string) {
+      // 检测禁删最后一项
+      if (state.tabs.length === 1) return;
+
+      const tabs = state.tabs;
+
+      let activeName = state.currentTab;
+
+      state.tabs = state.tabs.filter((tab: Tab, index: number) => {
+        if (tab.path === targetName) {
+          const nextTab = tabs[index + 1] || tabs[index - 1];
+          if (nextTab) {
+            activeName = nextTab.name;
+            router.push({
+              path: nextTab.path,
+              query: nextTab.query,
+            });
           }
-          return item.path === tab.path;
-        });
-        if (isRepetition) return;
-        this.tabs.push(tab);
-        this.currentTab = tab.name;
-      },
-      removeTab(targetName: string) {
-        // 检测禁删最后一项
-        if (this.tabs.length === 1) return;
+        }
+        return tab.path !== targetName;
+      });
 
-        const tabs = this.tabs;
+      state.currentTab = activeName;
+    }
 
-        let activeName = this.currentTab;
-
-        this.tabs = this.tabs.filter((tab: Tab, index: number) => {
-          if (tab.path === targetName) {
-            const nextTab = tabs[index + 1] || tabs[index - 1];
-            if (nextTab) {
-              activeName = nextTab.name;
-              router.push({
-                path: nextTab.path,
-                query: nextTab.query,
-              });
-            }
-          }
-          return tab.path !== targetName;
-        });
-
-        this.currentTab = activeName;
-      },
-
-      // register route
-      registerRoute() {
-        return new Promise((resolve, reject) => {
-          const menuJsonPaths = menuJson.map((item) => item.path);
-          const registerRoutes = asyncRoutes.filter((item: any) => {
-            return (
-              item.meta.permission === false ||
-              menuJsonPaths.includes(item.path)
-            );
-          });
-          this.menus = listToTree(
-            menuJson.map((item) => ({
-              ...item,
-              path: item.path || item.id,
-              name: item.path || item.id,
-            })),
-            0
+    // register route
+    function registerRoute(): Promise<any> {
+      return new Promise((resolve, reject) => {
+        const menuJsonPaths = menuJson.map((item) => item.path);
+        const registerRoutes = asyncRoutes.filter((item: any) => {
+          return (
+            item.meta.permission === false || menuJsonPaths.includes(item.path)
           );
-          resolve(wrapRoutes([...activeRoutes, ...registerRoutes]));
         });
-      },
+        state.menus = listToTree(
+          menuJson.map((item) => ({
+            ...item,
+            path: item.path || item.id,
+            name: item.path || item.id,
+          })),
+          0
+        );
+        resolve(wrapRoutes([...activeRoutes, ...registerRoutes]));
+      });
+    }
 
-      setToken(token: string) {
-        this.token = token;
-      },
-      changeCollapse() {
-        this.isCollapse = !this.isCollapse;
-      },
-    },
+    // 设置token
+    function setToken(token: string) {
+      state.token = token;
+    }
 
+    // 菜单收缩
+    function changeCollapse() {
+      state.isCollapse = !state.isCollapse;
+    }
+
+    // 平铺菜单
+    function flatMenu() {
+      const menus: MenuItem[] = [];
+      function findTab(menu: MenuItem[]) {
+        menu.forEach((item) => {
+          if (item.children && item.children.length) {
+            findTab(item.children);
+          } else {
+            menus.push({
+              ...item,
+            });
+          }
+        });
+      }
+      findTab(state.menus);
+      state.flatMenu = menus;
+    }
+
+    return {
+      ...toRefs(state),
+      changeCollapse,
+      setToken,
+      registerRoute,
+      removeTab,
+      addTab,
+    };
+  },
+  {
     persist: {
       enabled: true,
     },
