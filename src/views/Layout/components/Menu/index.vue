@@ -12,7 +12,7 @@
     </ElMenu>
     <div
       @click="setting.changeCollapse"
-      class="absolute left-0px bottom-0px w-full h-40px lh-40px bg-#E4EFFF cursor-pointer"
+      class="absolute left-0px bottom-0px w-full h-40px lh-40px bg-#E4EFFF c-#333333 cursor-pointer"
     >
       {{ !setting.isCollapse ? "《" : "》" }}
     </div>

@@ -145,7 +145,7 @@ export default defineComponent({
         },
       ...(props.createOption.useServerProps || {}),
       onSuccess(res) {
-        props.createOption.data.value = data.value;
+        props.createOption.data.value = unref(data);
         if (
           props.createOption.pagination ||
           props.createOption.pagination === undefined
