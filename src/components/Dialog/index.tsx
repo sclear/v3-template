@@ -80,8 +80,8 @@ export default defineComponent({
       }
 
       // if props has confirm callback
-      if (confirm) {
-        confirm((isClose?: boolean) => {
+      if (props.confirm) {
+        props.confirm((isClose?: boolean) => {
           if (isClose || isClose === undefined) {
             buttonLoading.value = false;
             visible.value = false;
@@ -130,7 +130,7 @@ export default defineComponent({
           <>
             <ElButton
               onClick={() => {
-                cancel && cancel();
+                props.cancel && props.cancel();
                 cancelCallReset();
                 visible.value = false;
               }}
