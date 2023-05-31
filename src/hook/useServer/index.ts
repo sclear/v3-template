@@ -99,24 +99,18 @@ export function useServer<T = any, K = any, U extends object | string = any>(
     if (
       httpModule._Mock_ !== false &&
       httpModule.Mock &&
-      process.env.VITE_APP_Mock_ === "1"
+      import.meta.env.VITE_API_Mock_ === "1"
     ) {
       data.value = config.beforeSetData
-        ? config.beforeSetData(httpModule.Mock, {
-            code: 200,
-            message: "",
-            data: httpModule.Mock,
-          })
+        ? config.beforeSetData(httpModule.Mock.data, httpModule.Mock)
         : httpModule.Mock;
-      config.onSuccess &&
-        config.onSuccess(httpModule.Mock, {
-          code: 200,
-          message: "",
-          data: httpModule.Mock,
-        });
-      config.successMessage &&
-        ElMessage({ message: config.successMessage, type: "success" });
-      loading.value = false;
+      setTimeout(() => {
+        config.onSuccess &&
+          config.onSuccess(httpModule.Mock.data, httpModule.Mock);
+        config.successMessage &&
+          ElMessage({ message: config.successMessage, type: "success" });
+        loading.value = false;
+      }, 200);
     } else {
       request[httpModule.method](
         httpModule.url + (unref(configUrlParams || undefined) || ""),
