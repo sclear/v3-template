@@ -39,6 +39,12 @@ export default defineComponent({
       type: Boolean,
       default: () => false,
     },
+    confirmText: {
+      type: String as PropType<string>,
+    },
+    cancelText: {
+      type: String as PropType<string>,
+    },
   },
   emits: {
     valid: () => void 0,
@@ -135,14 +141,14 @@ export default defineComponent({
                 visible.value = false;
               }}
             >
-              取消
+              {props.confirmText || "取消"}
             </ElButton>
             <ElButton
               type="primary"
               onClick={closeModel}
               loading={buttonLoading.value}
             >
-              确定
+              {props.cancelText || "确定"}
             </ElButton>
           </>
         );
