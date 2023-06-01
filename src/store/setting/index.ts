@@ -15,8 +15,8 @@ interface MenuItem {
 interface Tab {
   path: string;
   query: any;
-  title?: string;
-  name?: string;
+  title: string;
+  name: string;
 }
 
 interface SettingState {
