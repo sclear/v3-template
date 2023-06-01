@@ -4,6 +4,7 @@ import "./index.less";
 import { ElTable, ElPagination, ElTableColumn } from "element-plus";
 import { omit } from "../../tools/util";
 import { useServer, ApiType, UseServerConfig } from "../../hook/useServer";
+import { setting } from "@/tools/setting/setting";
 
 type UseServerProps = Pick<
   UseServerConfig<any, any, any>,
@@ -109,12 +110,7 @@ export default defineComponent({
       let pages = {};
       // 未传值
       if (props.createOption.pagination === undefined) {
-        pages = {
-          page: {
-            pageSize: pagination.pageSize,
-            pageNo: pagination.currentPage,
-          },
-        };
+        pages = setting.table.pagination(pagination);
       }
       // 去掉pagination
       if (props.createOption.pagination === false) {
@@ -139,10 +135,7 @@ export default defineComponent({
           : true
         : false,
       beforeSetData:
-        props.createOption.beforeSetData ||
-        function (res) {
-          return res || [];
-        },
+        props.createOption.beforeSetData || setting.table.apiBeforeSetData,
       ...(props.createOption.useServerProps || {}),
       onSuccess(res) {
         props.createOption.data.value = unref(data);
@@ -152,7 +145,7 @@ export default defineComponent({
         ) {
           pagination.total = props.createOption.total
             ? props.createOption.total(res)
-            : res?.page?.count || 0;
+            : setting.table.total(res);
         }
       },
     });

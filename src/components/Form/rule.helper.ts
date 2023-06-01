@@ -2,24 +2,7 @@ import createRules, { isCreateValidateInstance } from "./../../tools/validate";
 import { RuleItem } from "async-validator";
 import type { FormType, FormSettingType } from "./../FormItem";
 import { isFormGroupType } from "./../FormItem";
-
-const trigger = {
-  Select: "change",
-  Input: "blur",
-  DatePicker: "change",
-  Radio: "change",
-
-  default: "change",
-};
-
-const message = {
-  Select: "请选择",
-  DatePicker: "请选择",
-  Radio: "请选择",
-  Input: "请输入",
-
-  default: "请选择",
-};
+import { setting } from "@/tools/setting/setting";
 
 export function ruleHelper(
   rule: RuleItem[] | typeof createRules,
@@ -45,10 +28,13 @@ export function ruleHelper(
       if (item.required === true && Object.keys(item).length === 1) {
         return {
           ...item,
-          trigger: trigger[formItem.type || "default"],
-          message: `${message[formItem.type || "default"]}${
-            formItem.label || ""
-          }`,
+          trigger:
+            setting.form.eventTrigger[formItem.type || "default"] ||
+            setting.form.eventTrigger["default"],
+          message: `${
+            setting.form.labelMessage[formItem.type || "default"] ||
+            setting.form.labelMessage["default"]
+          }${formItem.label || ""}`,
         };
       }
       return item;
@@ -61,8 +47,10 @@ function requiredGenerate(item: RuleItem, formItem: FormSettingType<any>) {
   if (item.required === true && Object.keys(item).length === 1) {
     return {
       ...item,
-      trigger: trigger[formItem.type || "default"],
-      message: `${message[formItem.type || "default"]}${formItem.label || ""}`,
+      trigger: setting.form.eventTrigger[formItem.type || "default"],
+      message: `${setting.form.labelMessage[formItem.type || "default"]}${
+        formItem.label || ""
+      }`,
     };
   }
 }

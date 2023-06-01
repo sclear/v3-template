@@ -8,7 +8,7 @@ export const api = {
   list: {
     method: "get",
     url: "https://mock.mengxuegu.com/mock/635605c88c53a558a4840c72/test/list",
-    // _Mock_: false,
+    _Mock_: false,
     Mock: {
       code: 200,
       data: [

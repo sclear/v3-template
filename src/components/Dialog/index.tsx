@@ -13,6 +13,7 @@ import type { PropType } from "vue";
 import { ElDialog, ElButton, ElIcon } from "element-plus";
 import { Close } from "@element-plus/icons-vue";
 import "./index.less";
+import { setting } from "@/tools/setting/setting";
 
 export default defineComponent({
   props: {
@@ -141,14 +142,14 @@ export default defineComponent({
                 visible.value = false;
               }}
             >
-              {props.confirmText || "取消"}
+              {props.confirmText || setting.dialog.cancelText || "取消"}
             </ElButton>
             <ElButton
               type="primary"
               onClick={closeModel}
               loading={buttonLoading.value}
             >
-              {props.cancelText || "确定"}
+              {props.cancelText || setting.dialog.confirmText || "确定"}
             </ElButton>
           </>
         );
