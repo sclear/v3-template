@@ -11,6 +11,10 @@ export const setting = {
       Input: "blur",
       DatePicker: "change",
       Radio: "change",
+      CheckBox: "change",
+      Rate: "change",
+      Switch: "change",
+      Upload: "change",
 
       default: "change",
     },
@@ -19,6 +23,10 @@ export const setting = {
       DatePicker: "请选择",
       Radio: "请选择",
       Input: "请输入",
+      CheckBox: "请选择",
+      Rate: "请选择",
+      Switch: "请选择",
+      Upload: "请选择",
 
       default: "请选择",
     },
