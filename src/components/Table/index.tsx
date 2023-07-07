@@ -28,12 +28,12 @@ type Pagination = {
 interface CreateTable {
   api?: ApiType;
   column: Column[];
-  beforeSetData?: any;
   customProps?: any;
   pagination?: boolean | ((pagination: Pagination) => any);
   total?: (res: any) => number;
   autoRun?: boolean;
   useServerProps?: UseServerProps;
+  formatRequestData?: <T>(data: T, Pagination: Pagination) => any;
   data?: Ref<any[]>;
 }
 
@@ -126,31 +126,53 @@ export default defineComponent({
         ...(unref(props.searchParams || {}) || {}),
       };
     });
-    const { loading, run, data } = useServer({
-      api: props.createOption.api || ("" as any),
-      data: params,
-      autoRun: props.createOption.api
-        ? typeof props.createOption.autoRun === "boolean"
-          ? props.createOption.autoRun
-          : true
-        : false,
-      beforeSetData:
-        props.createOption.beforeSetData || setting.table.apiBeforeSetData,
-      ...(props.createOption.useServerProps || {}),
-      onSuccess(res) {
-        props.createOption.data.value = unref(data);
-        if (
-          props.createOption.pagination ||
-          props.createOption.pagination === undefined
-        ) {
-          pagination.total = props.createOption.total
-            ? props.createOption.total(res)
-            : setting.table.total(res);
-        }
-      },
-    });
+    // const { loading, run, data } = useServer({
+    //   api: props.createOption.api || ("" as any),
+    //   data: params,
+    //   autoRun: props.createOption.api
+    //     ? typeof props.createOption.autoRun === "boolean"
+    //       ? props.createOption.autoRun
+    //       : true
+    //     : false,
+    //   beforeSetData:
+    //     props.createOption.beforeSetData || setting.table.apiBeforeSetData,
+    //   ...(props.createOption.useServerProps || {}),
+    //   onSuccess(res) {
+    //     props.createOption.data.value = unref(data);
+    //     if (
+    //       props.createOption.pagination ||
+    //       props.createOption.pagination === undefined
+    //     ) {
+    //       pagination.total = props.createOption.total
+    //         ? props.createOption.total(res)
+    //         : setting.table.total(res);
+    //     }
+    //   },
+    // });
+    const loading = ref(false);
+    const data = ref<any>([]);
+    function run() {
+      loading.value = true;
+      useServer({
+        api: props.createOption.api || ("" as any),
+        data: props.createOption.formatRequestData
+          ? props.createOption.formatRequestData(
+              unref(props.searchParams),
+              pagination
+            )
+          : params,
+        ...(props.createOption.useServerProps || {}),
+        onSuccess(resData) {
+          pagination.total = setting.table.total(resData);
+          props.createOption.data.value = unref(resData);
+        },
+        end() {
+          loading.value = false;
+        },
+      }).run();
+    }
 
-    props.createOption.run = run;
+    props.createOption.autoRun && run();
 
     const search = (pager: boolean = false) => {
       if (pager) {
@@ -159,6 +181,8 @@ export default defineComponent({
       }
       run();
     };
+
+    props.createOption.autoRun && run();
 
     // provide
     provide("formTable", {

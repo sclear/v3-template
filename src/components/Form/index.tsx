@@ -51,10 +51,10 @@ export function CreateFormOption<T = any, K extends keyof RefValue<T> = never>(
 export default defineComponent({
   name: "createForm",
   props: {
+    // TODO: fix type
     createOption: {
-      type: Object as unknown as PropType<
-        ReturnType<typeof CreateFormOption<any>>
-      >,
+      type: Object as unknown as PropType<any>,
+      // ReturnType<typeof CreateFormOption<any>>
       default: {
         data: ref({}),
         form: [],

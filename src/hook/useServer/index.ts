@@ -24,9 +24,10 @@ export interface UseServerConfig<Result, T, U extends string | object> {
   throttleTime?: number;
   debounceTime?: number;
   onError?: (err: any) => void;
-  onSuccess?: (data: T, response: ResponseData<T>) => void;
+  onSuccess?: (data: Result, ResData: T, response: ResponseData<T>) => void;
   beforeSetData?: (data: T, response: ResponseData<T>) => Result;
   responseType?: "json" | "blob";
+  end?: () => void;
   downloadOption?: {
     fileName: string;
     isDownload?: 0 | 1;
@@ -106,7 +107,7 @@ export function useServer<T = any, K = any, U extends object | string = any>(
         : httpModule.Mock;
       setTimeout(() => {
         config.onSuccess &&
-          config.onSuccess(httpModule.Mock.data, httpModule.Mock);
+          config.onSuccess(data.value, httpModule.Mock.data, httpModule.Mock);
         config.successMessage &&
           ElMessage({ message: config.successMessage, type: "success" });
         loading.value = false;
@@ -132,7 +133,7 @@ export function useServer<T = any, K = any, U extends object | string = any>(
             data.value = config.beforeSetData
               ? config.beforeSetData(res.data, res)
               : res.data;
-            config.onSuccess && config.onSuccess(res.data, res);
+            config.onSuccess && config.onSuccess(data.value, res.data, res);
             config.successMessage &&
               ElMessage({ message: config.successMessage, type: "success" });
             console.log(config.successMessage);
@@ -147,6 +148,7 @@ export function useServer<T = any, K = any, U extends object | string = any>(
         })
         .finally(() => {
           loading.value = false;
+          config.end && config.end();
         });
     }
   }

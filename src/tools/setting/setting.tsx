@@ -38,13 +38,9 @@ export const setting = {
   },
 
   table: {
-    // table - useServer api
-    apiBeforeSetData(res: any) {
-      return res || [];
-    },
     // pagination total
     total(res: any) {
-      return res?.page?.count || 0;
+      return res?.count || 0;
     },
     // pagination
     pagination(pagination: Pagination) {
