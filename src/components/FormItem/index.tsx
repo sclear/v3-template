@@ -88,6 +88,7 @@ export type CreateFormOptions<T = any, K = unknown> = {
     ruleInstance: typeof createRules,
     data: RefValue<T>
   ) => Record<string, RuleItem[] | typeof createRules>;
+  // instance: Ref<any>;
 };
 
 export function vFor<T>(

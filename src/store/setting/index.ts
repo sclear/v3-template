@@ -145,7 +145,7 @@ export const useSetting = defineStore(
         state.menus = listToTree(
           menuJson.map((item) => ({
             ...item,
-            path: item.path || item.id,
+            path: String(item.path || item.id),
             name: item.path || item.id,
           })),
           0

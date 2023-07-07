@@ -15,7 +15,7 @@
 
 <script lang="tsx" setup>
 import { ElMessage, ElCard, ElRow, ElCol } from "element-plus";
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { ElButton, ElInput } from "element-plus";
 import Table, { CreateTableOption } from "./../../components/Table";
 import Form, { CreateFormOption } from "./../../components/Form/index";
@@ -127,11 +127,12 @@ const searchForm = CreateFormOption({
   createRule(create) {
     return {
       "obj.link.0.name": create.required(),
-      name1: create.required(),
+      name: create.required(),
     };
   },
   // labelWidth: 80,
 });
+
 
 const dialogForm = CreateFormOption({
   disabled: ref(false),

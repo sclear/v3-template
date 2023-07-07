@@ -40,6 +40,11 @@ export function CreateFormOption<T = any, K extends keyof RefValue<T> = never>(
         (option.omit || []) as K[]
       );
     }),
+    instance: ref(),
+    reset: () => {},
+    validate: function (done?: (isClose?: boolean) => void): Promise<boolean> {
+      return new Promise((resolve, reject) => {});
+    },
   };
 }
 
@@ -47,7 +52,9 @@ export default defineComponent({
   name: "createForm",
   props: {
     createOption: {
-      type: Object as unknown as PropType<CreateFormOptions>,
+      type: Object as unknown as PropType<
+        ReturnType<typeof CreateFormOption<any>>
+      >,
       default: {
         data: ref({}),
         form: [],
@@ -69,6 +76,7 @@ export default defineComponent({
     let store: any = [];
 
     const elFormRef = ref();
+    props.createOption.instance = elFormRef;
 
     store = JSON.parse(JSON.stringify(props.createOption.data.value));
 
@@ -85,6 +93,7 @@ export default defineComponent({
           props.createOption.tableRef?.value?.run(true);
       }
     }
+    props.createOption.reset = reset;
 
     // dialog
     const dialog = inject<{
@@ -111,63 +120,63 @@ export default defineComponent({
       };
     });
 
-    expose({
-      validate(done: (isClose?: boolean) => void) {
-        return new Promise((resolve, reject) => {
-          elFormRef.value.validate((valid: boolean) => {
-            if (valid) {
-              // if has request api
-              if (createOption.api) {
-                createOption.loading!.value = true;
-                const { run } = useServer({
-                  api: unref(createOption.api),
-                  data: requestData,
-                  ...(createOption.requestData
-                    ? createOption.requestData(
-                        unref(createOption.data),
-                        unref(createOption.api)
-                      )
-                    : { successMessage: "操作成功" }),
+    function validate(done?: (isClose?: boolean) => void): Promise<boolean> {
+      const cb = done || function () {};
+      return new Promise((resolve, reject) => {
+        elFormRef.value.validate((valid: boolean) => {
+          if (valid) {
+            // if has request api
+            if (createOption.api) {
+              createOption.loading!.value = true;
+              const { run } = useServer({
+                api: unref(createOption.api),
+                data: requestData,
+                ...(createOption.requestData
+                  ? createOption.requestData(
+                      unref(createOption.data),
+                      unref(createOption.api)
+                    )
+                  : { successMessage: "操作成功" }),
 
-                  onSuccess(resp, res) {
-                    createOption.loading!.value = false;
-                    if (res.code === 200) {
-                      if (createOption.onSuccess) {
-                        createOption.onSuccess(
-                          done,
-                          unref(createOption.data),
-                          res
-                        );
-                      } else {
-                        done();
-                        if (!props.freeze) {
-                          tableRun?.run && tableRun?.run();
-                        }
+                onSuccess(resp, res) {
+                  createOption.loading!.value = false;
+                  if (res.code === 200) {
+                    if (createOption.onSuccess) {
+                      createOption.onSuccess(cb, unref(createOption.data), res);
+                    } else {
+                      cb();
+                      if (!props.freeze) {
+                        tableRun?.run && tableRun?.run();
                       }
-                      reset();
                     }
-                  },
-                  onError() {
-                    createOption.loading!.value = false;
-                    done && done(false);
-                    createOption.onError && createOption.onError(done);
-                  },
-                });
-                run();
-                return;
-              }
-              createOption.onSuccess &&
-                createOption.onSuccess(done, unref(createOption.data.value));
-            } else {
-              done && done(false);
-              createOption.onError && createOption.onError(done);
+                    reset();
+                  }
+                },
+                onError() {
+                  createOption.loading!.value = false;
+                  cb && cb(false);
+                  createOption.onError && createOption.onError(cb);
+                },
+              });
+              run();
+              return;
             }
-            if (!createOption.api) {
-              resolve(valid);
-            }
-          });
+            createOption.onSuccess &&
+              createOption.onSuccess(cb, unref(createOption.data.value));
+          } else {
+            cb && cb(false);
+            createOption.onError && createOption.onError(cb);
+          }
+          if (!createOption.api) {
+            resolve(valid);
+          }
         });
-      },
+      });
+    }
+    props.createOption.validate = validate;
+
+    expose({
+      validate,
       reset,
       resetFields(e: any) {
         elFormRef.value.resetFields(e);
