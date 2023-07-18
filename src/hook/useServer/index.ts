@@ -26,7 +26,11 @@ export interface UseServerConfig<Result, T, U extends string | object> {
   onError?: (err: any) => void;
   onSuccess?: (data: Result, ResData: T, response: ResponseData<T>) => void;
   beforeSetData?: (data: T, response: ResponseData<T>) => Result;
-  responseType?: "json" | "blob";
+  formatRequestCondition?: (requestCondition: { data: U; urlParams: any }) => {
+    responseType?: "json" | "blob";
+    data?: any;
+    urlParams?: string;
+  };
   end?: () => void;
   downloadOption?: {
     fileName: string;
@@ -113,15 +117,32 @@ export function useServer<T = any, K = any, U extends object | string = any>(
         loading.value = false;
       }, 200);
     } else {
+      const formatCondition = {
+        data: unref(configData),
+        urlParams: unref(configUrlParams || undefined) || "",
+      };
+
+      // format request condition
+      if (config.formatRequestCondition) {
+        const { data, urlParams } = config.formatRequestCondition({
+          data: unref(configData),
+          urlParams: unref(configUrlParams || undefined) || "",
+        });
+        console.log(data, urlParams);
+        formatCondition.data && (formatCondition.data = data);
+        formatCondition.urlParams && (formatCondition.urlParams = urlParams);
+        console.log(data, urlParams);
+      }
+
       request[httpModule.method](
-        httpModule.url + (unref(configUrlParams || undefined) || ""),
+        httpModule.url + formatCondition.urlParams,
         ["get", "delete"].includes(httpModule.method)
           ? {
-              params: unref(configData),
+              params: formatCondition.data,
               responseType: config?.responseType || "json",
               headers: config.headers || {},
             }
-          : unref(configData),
+          : formatCondition.data,
         {
           withCredentials: true,
           headers: config.headers || {},

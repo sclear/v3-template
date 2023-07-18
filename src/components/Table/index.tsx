@@ -172,8 +172,6 @@ export default defineComponent({
       }).run();
     }
 
-    props.createOption.autoRun && run();
-
     const search = (pager: boolean = false) => {
       if (pager) {
         pagination.currentPage = 1;

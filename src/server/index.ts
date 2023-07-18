@@ -26,6 +26,10 @@ export const api = {
     method: "get",
     url: "https://mock.mengxuegu.com/mock/635605c88c53a558a4840c72/test/full",
   },
+  fullPost: {
+    method: "post",
+    url: "https://mock.mengxuegu.com/mock/635605c88c53a558a4840c72/test/full",
+  },
 };
 
 const user = {
