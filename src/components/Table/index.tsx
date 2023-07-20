@@ -25,6 +25,12 @@ type Pagination = {
   total: number;
 };
 
+type FormatRowText = (
+  content?: string | number | JSX.Element | undefined,
+  prop?: string,
+  option?: { isRender: boolean }
+) => any;
+
 interface CreateTable {
   api?: ApiType;
   column: Column[];
@@ -32,6 +38,7 @@ interface CreateTable {
   pagination?: boolean | ((pagination: Pagination) => any);
   total?: (res: any) => number;
   autoRun?: boolean;
+  formatRowText?: FormatRowText;
   useServerProps?: UseServerProps;
   formatRequestData?: <T>(data: T, Pagination: Pagination) => any;
   data?: Ref<any[]>;
@@ -47,7 +54,7 @@ export function CreateTableOption(option: CreateTable) {
 }
 
 // 递归解析tableHeader
-function deepResolver(jsxNodes: any[]) {
+function deepResolver(jsxNodes: any[], formatRowText?: FormatRowText) {
   if (!jsxNodes || !jsxNodes.length) return;
   return jsxNodes.map((item) => {
     const prop = {
@@ -55,13 +62,32 @@ function deepResolver(jsxNodes: any[]) {
       ...defaultProps,
       ...(item.customProps || {}),
     };
-    const slots = {
-      default: (slots: SlotsParams) => {
-        return item.render
-          ? item.render(slots?.row[prop?.prop], slots.row, slots.$index)
-          : null;
-      },
-    };
+
+    // slots & format
+    let slots;
+    if (formatRowText) {
+      slots = {
+        default: (slots: SlotsParams) => {
+          return item.render
+            ? formatRowText(
+                item.render(slots?.row[prop?.prop], slots.row, slots.$index),
+                prop?.prop,
+                { isRender: true }
+              )
+            : formatRowText(slots?.row[prop?.prop] as any, prop.prop, {
+                isRender: false,
+              });
+        },
+      };
+    } else {
+      slots = {
+        default: (slots: SlotsParams) => {
+          return item.render
+            ? item.render(slots?.row[prop?.prop], slots.row, slots.$index)
+            : slots?.row[prop?.prop];
+        },
+      };
+    }
     if (item.children) {
       return (
         <ElTableColumn {...prop}>{deepResolver(item.children)}</ElTableColumn>
@@ -69,7 +95,7 @@ function deepResolver(jsxNodes: any[]) {
     } else
       return (
         <ElTableColumn v-slots={slots} {...prop}>
-          {deepResolver(item.children)}
+          {deepResolver(item.children, formatRowText)}
         </ElTableColumn>
       );
   });
@@ -86,6 +112,7 @@ interface Column {
     $index: number
   ) => JSX.Element | string | any;
 }
+
 export default defineComponent({
   props: {
     createOption: {
@@ -198,7 +225,10 @@ export default defineComponent({
           border
           {...(props.createOption.customProps || {})}
         >
-          {deepResolver(props.createOption.column)}
+          {deepResolver(
+            props.createOption.column,
+            props.createOption.formatRowText
+          )}
         </ElTable>
         {typeof props.createOption.pagination === "boolean" ? (
           props.createOption.pagination
