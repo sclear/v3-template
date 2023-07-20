@@ -345,9 +345,15 @@ function renderItem(
         >
           <CustomComponent
             {...childProp}
-            modelValue={getValueByPath(props.data.value, item.model || "")}
+            modelValue={
+              childProp.defaultValue !== undefined
+                ? childProp.defaultValue
+                : getValueByPath(props.data.value, item.model || "")
+            }
             onUpdate:modelValue={(e) => {
-              setValueByPath(props.data.value, item.model || "", e);
+              if (!item.defaultValue) {
+                setValueByPath(props.data.value, item.model || "", e);
+              }
             }}
             // v-model={props.data.value[item.model]}
           />
