@@ -75,6 +75,7 @@ export type CreateFormOptions<T = any, K = unknown> = {
   type?: any;
   data: T;
   omit?: K[];
+  row?: number[];
   labelWidth?: number;
   api?: ApiType | Ref<ApiType>;
   customProps?: any;
@@ -224,7 +225,7 @@ function renderItem(
   });
 
   // align
-  const row = item.row || [24, 0];
+  const row = item.row || option.row || [24, 0];
   const rowSpan = row[0] || 24;
   const rowOffset = row[1] || 0;
   const align = item.align || "left";
