@@ -14,7 +14,7 @@ export type FormType<T> = FormGroupType<T> | FormSettingType<T>;
 type FormGroupType<T> = {
   children: FormSettingType<T>[];
   row?: number[];
-  vIf?: (args: { value: unknown; model: string; data: T }) => boolean;
+  vIf?: (args: { value: unknown; model: string; data: RefValue<T> }) => boolean;
 };
 
 export function isFormGroupType(formItem: any): formItem is FormGroupType<any> {
@@ -30,31 +30,33 @@ export type FormSettingType<T> = {
   model?: string;
   row?: number[];
   align?: "left" | "right" | "center";
-  vIf?: (args: { value: unknown; model: string; data: T }) => boolean;
+  vIf?: (args: { value: unknown; model: string; data: RefValue<T> }) => boolean;
   vDisabled?: (args: {
     value: unknown;
     model: string;
-    data: T;
+    data: RefValue<T>;
     api: ApiType;
   }) => boolean;
-  render?: (
-    model: string,
-    data: T,
-    disabled: ComputedRef<boolean>
-  ) => JSX.Element | string;
+  render?: (args: {
+    model: string;
+    value: any;
+    data: RefValue<T>;
+    disabled: ComputedRef<boolean>;
+  }) => JSX.Element | string;
   top?: string | number;
-  renderFormItem?: (
-    model: string,
-    data: T,
-    disabled: ComputedRef<boolean>
-  ) => JSX.Element | string;
+  renderFormItem?: (args: {
+    model: string;
+    value: any;
+    data: RefValue<T>;
+    disabled: ComputedRef<boolean>;
+  }) => JSX.Element | string;
   labelWidth?: number;
   placeholder?: string;
   className?: string;
-  onChange?: (data: { value: any; type: string; data: T }) => void;
+  onChange?: (data: { value: any; type: string; data: RefValue<T> }) => void;
   dataSource?: Ref<any[]> | any[];
   customProps?: object;
-  defaultValue?: (data: T) => any;
+  defaultValue?: (data: RefValue<T>) => any;
   createRule?: (
     ruleInstance: typeof createRules,
     data: RefValue<T>
@@ -82,7 +84,11 @@ export type CreateFormOptions<T = any, K = unknown> = {
   tableRef?: Ref<any>;
   loading?: Ref<boolean>;
   requestData?: (data: RefValue<T>, api: ApiType) => any;
-  onChange?: (data: { value: unknown; type: string; data: T }) => void;
+  onChange?: (data: {
+    value: unknown;
+    type: string;
+    data: RefValue<T>;
+  }) => void;
   onSuccess?: (done: () => void, data: RefValue<T>, requestData?: any) => void;
   onError?: (done: () => void) => void;
   createRule?: (
@@ -118,10 +124,14 @@ export function CreateElForm(
           if (isFormGroupType(item)) {
             // computed v-if
             const vif = computed(() => {
-              console.log(item.vIf);
+              // console.log(item.vIf);
               if (
                 (item.vIf &&
-                  item.vIf({ data: props.data, value: "", model: "" })) ||
+                  item.vIf({
+                    data: unref(props.data),
+                    value: "",
+                    model: "",
+                  })) ||
                 item.vIf === undefined
               ) {
                 return true;
@@ -176,14 +186,14 @@ function renderItem(
 
   // computed v-if
   const vif = computed(() => {
-    console.log(item.vIf);
+    // console.log(item.vIf);
     if (
       (item.vIf &&
         // item.model &&
         item.vIf({
           model: item.model || "",
           value: getValueByPath(props.data.value, item.model || ""),
-          data: props.data,
+          data: unref(props.data),
         })) ||
       item.vIf === undefined
     ) {
@@ -203,7 +213,7 @@ function renderItem(
         value: item.model
           ? getValueByPath(props.data.value, item.model)
           : props.data.value,
-        data: props.data,
+        data: unref(props.data),
         api: props.api,
       }) === false
     )
@@ -216,7 +226,7 @@ function renderItem(
       item.vDisabled({
         model: item.model || "",
         value: getValueByPath(props.data.value, item.model),
-        data: props.data,
+        data: unref(props.data),
         api: props.api,
       })
     ) {
@@ -247,7 +257,12 @@ function renderItem(
                 justifyContent: alignGroup[align],
               }}
             >
-              {item.render("", props.data, disabled)}
+              {item.render({
+                model: "",
+                value: "",
+                data: unref(props.data),
+                disabled: disabled,
+              })}
             </div>
           </ElCol>
         </>
@@ -269,11 +284,12 @@ function renderItem(
                 justifyContent: alignGroup[align],
               }}
             >
-              {item.render(
-                getValueByPath(props.data.value, item.model),
-                props.data,
-                disabled
-              )}
+              {item.render({
+                model: item.model,
+                value: getValueByPath(props.data.value, item.model),
+                data: unref(props.data),
+                disabled: disabled,
+              })}
             </div>
           </ElCol>
         </>
@@ -289,11 +305,12 @@ function renderItem(
             class={item.className}
             prop={item.model}
           >
-            {item.renderFormItem(
-              getValueByPath(props.data.value, item.model),
-              props.data,
-              disabled
-            )}
+            {item.renderFormItem({
+              model: item.model,
+              value: getValueByPath(props.data.value, item.model),
+              data: unref(props.data),
+              disabled: disabled,
+            })}
           </ElFormItem>
         </ElCol>
       );
@@ -306,7 +323,12 @@ function renderItem(
             label={item.label ? item.label + ":" : ""}
             class={item.className}
           >
-            {item.renderFormItem("", props.data, disabled)}
+            {item.renderFormItem({
+              model: "",
+              value: "",
+              data: unref(props.data),
+              disabled: disabled,
+            })}
           </ElFormItem>
         </ElCol>
       );
@@ -325,12 +347,12 @@ function renderItem(
       const data = {
         type,
         value,
-        data: props.data,
+        data: unref(props.data),
       };
       item.onChange && item.onChange(data);
       option.onChange && option.onChange(data);
     },
-    defaultValue: item.defaultValue && item.defaultValue(props.data),
+    defaultValue: item.defaultValue && item.defaultValue(unref(props.data)),
   };
 
   return (

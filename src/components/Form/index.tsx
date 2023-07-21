@@ -40,6 +40,7 @@ export function CreateFormOption<T = any, K extends keyof RefValue<T> = never>(
         (option.omit || []) as K[]
       );
     }),
+    // data: ref(option.data),
     instance: ref(),
     reset: () => {},
     validate: function (done?: (isClose?: boolean) => void): Promise<boolean> {

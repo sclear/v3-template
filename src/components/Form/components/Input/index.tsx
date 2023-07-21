@@ -17,7 +17,7 @@ export default defineComponent({
             emit("update:modelValue", e);
             emit("change", e, model);
           }}
-          modelValue={props.modelValue}
+          modelValue={props.modelValue as any}
         />
       </>
     );

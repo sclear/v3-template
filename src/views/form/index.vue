@@ -114,10 +114,10 @@ const searchFormVIf = CreateFormOption({
       model: "name",
       row: [8],
       vIf({ data, value }) {
-        return data.value.showName === 1;
+        return data.showName === 1;
       },
       vDisabled({ data }) {
-        return data.value.vDisabledName === 1;
+        return data.vDisabledName === 1;
       },
     },
     {
@@ -138,11 +138,18 @@ const searchFormVIf = CreateFormOption({
     },
   ],
   data: ref({
-    name: "",
+    name: 0,
     showName: 1,
-    vDisabledName: undefined,
+    vDisabledName: 0,
   }),
 });
+setTimeout(() => {
+  searchFormVIf.data.value.showName = 0;
+}, 5000);
+setTimeout(() => {
+  // searchFormVIf.data.value.vDisabledName = 1;
+  searchFormVIf.data.value.showName = 1;
+}, 10000);
 const searchFormRefRender = ref();
 const searchFormRender = CreateFormOption({
   form: [
@@ -176,23 +183,31 @@ const searchFormRenderFormItem = CreateFormOption({
   form: [
     {
       row: [6],
-      render() {
-        return <div>{searchFormRenderFormItem.data.value.val}</div>;
+      render({ data }) {
+        return data.val;
       },
     },
     {
       row: [6],
-      label: "value",
-      model: "value",
-      renderFormItem(model, data) {
-        return <ElInput v-model={data.value.val}></ElInput>;
+      label: "val",
+      model: "val",
+      type: "Input",
+      onChange({ value, data }) {
+        console.log(value);
+        console.log(data);
       },
+      // renderFormItem({ data }) {
+      //   return <ElInput v-model={data.val}></ElInput>;
+      // },
     },
   ],
   data: ref({
     val: "Please Input",
   }),
 });
+setTimeout(() => {
+  searchFormRenderFormItem.data.value.val = "234234";
+}, 5000);
 const searchFormRefRule = ref();
 const searchFormRule = CreateFormOption({
   form: [

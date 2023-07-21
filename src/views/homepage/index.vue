@@ -1,5 +1,5 @@
 <template>
-  <!-- {{ searchForm.omitData }} -->
+  {{ searchForm.data }}
   <Form ref="searchFormRef" :createOption="searchForm" />
   <Table
     ref="tableRef"
@@ -20,35 +20,29 @@ import { ElButton, ElInput } from "element-plus";
 import Table, { CreateTableOption } from "./../../components/Table";
 import Form, { CreateFormOption } from "./../../components/Form/index";
 import Dialog from "./../../components/Dialog";
-import { useServer } from "./../../hook/useServer";
-import { omit } from "lodash";
-// import qs from 'qs'
+import { useServer } from "@/entry";
 
 const dialogRef = ref();
 const searchFormRef = ref();
 const tableRef = ref();
-
 const searchForm = CreateFormOption({
   tableRef,
-  omit: ["name"],
+  row: [8],
   form: [
     {
       type: "Input",
       label: "姓名",
       model: "name",
-      row: [8],
     },
     {
       type: "Input",
       label: "电话号码",
       model: "phone",
-      row: [8],
     },
     {
       type: "Input",
       label: "身份证号",
       model: "idCard",
-      row: [8],
     },
     {
       type: "Select",
@@ -64,16 +58,24 @@ const searchForm = CreateFormOption({
           label: "女",
         },
       ],
-      row: [8],
     },
     {
       type: "DatePicker",
       label: "出生日期",
-      model: "birth",
-      row: [8],
+      model: "startTime",
+      defaultValue(data) {
+        return [data.startTime, data.endTime];
+      },
+      onChange({ value, data }) {
+        data.startTime = value[0];
+        data.endTime = value[1];
+      },
+      customProps: {
+        type: "daterange",
+        "value-format": "YYYY-MM-DD hh:mm:ss",
+      },
     },
     {
-      row: [8],
       align: "right",
       render() {
         return (
@@ -81,13 +83,6 @@ const searchForm = CreateFormOption({
             <ElButton
               type="primary"
               onClick={() => {
-                dialogForm.data.value = {
-                  name: "",
-                  phone: "",
-                  idCard: "",
-                  birth: "",
-                  age: "",
-                };
                 dialogRef.value.open({
                   title: "新增用户",
                   disabled: false,
@@ -123,19 +118,17 @@ const searchForm = CreateFormOption({
     idCard: "",
     birth: "",
     phone: "",
+    startTime: "",
+    endTime: "",
   }),
   createRule(create) {
     return {
-      "obj.link.0.name": create.required(),
-      name: create.required(),
+      startTime: create.required(),
     };
   },
-  // labelWidth: 80,
 });
 
-
 const dialogForm = CreateFormOption({
-  disabled: ref(false),
   form: [
     {
       type: "Input",
@@ -187,30 +180,29 @@ const dialogForm = CreateFormOption({
       model: "age",
     },
   ],
-  api: ref("createUser"),
+  api: "createUser",
   labelWidth: 120,
   data: ref({
     name: "",
-    name1: "",
-    name2: "",
     age: "",
     birth: "",
+    idCard: "",
+    phone: "",
   }),
   createRule(create) {
     return {
-      // name1: create.required(),
-      // name2: create.required(),
-      name: create.must(),
-      birth: create.must(),
-      age: create.must(),
-      idCard: create.must(),
-      phone: create.must().rules,
+      name: create.required(),
+      birth: create.required(),
+      age: create.required(),
+      idCard: create.required(),
+      phone: create.required(),
     };
   },
 });
 
 const tableOption = CreateTableOption({
   api: "list",
+  autoRun: true,
   column: [
     {
       label: "序号",
