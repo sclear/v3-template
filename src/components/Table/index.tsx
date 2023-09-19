@@ -63,6 +63,16 @@ function deepResolver(jsxNodes: any[], formatRowText?: FormatRowText) {
       ...(item.customProps || {}),
     };
 
+    if (item.vIf || item.vIf === false) {
+      const vIf =
+        typeof item.vIf === "boolean" || typeof item.vIf === "object"
+          ? unref(item.vIf)
+          : item.vIf();
+      if (!vIf) {
+        return null;
+      }
+    }
+
     // slots & format
     let slots;
     if (formatRowText) {
@@ -106,6 +116,7 @@ interface Column {
   label?: string;
   customProps?: Record<string, unknown>;
   children?: Column[];
+  vIf?: (() => boolean) | boolean | Ref<boolean>;
   render?: (
     text: string,
     row: any,

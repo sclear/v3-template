@@ -4,6 +4,10 @@ import type { FormType, FormSettingType } from "./../FormItem";
 import { isFormGroupType } from "./../FormItem";
 import { setting } from "@/tools/setting/setting";
 
+const isArray = Array.isArray;
+function getFirstModel(model: Model): string {
+  return isArray(model) ? model[0] : model;
+}
 export function ruleHelper(
   rule: RuleItem[] | typeof createRules,
   key: string,
@@ -19,7 +23,8 @@ export function ruleHelper(
       formFlat.push(item);
     }
   });
-  const formItem = formFlat.find((item) => item.model === key);
+  console.log(formFlat);
+  const formItem = formFlat.find((item) => getFirstModel(item.model) === key);
   // 存在校验 没有实际Form
   if (!formItem) return rules;
 

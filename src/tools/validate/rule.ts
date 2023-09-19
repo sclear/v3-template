@@ -169,6 +169,7 @@ export class rules {
   equal(data: object, key: string, keyRpt: string, message?: string) {
     const rule = {
       validator(rule: any, value: any, callback: any) {
+        console.log(value);
         if (
           getValueByPath(unref(data), key) !=
           getValueByPath(unref(data), keyRpt)

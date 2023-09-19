@@ -1,5 +1,6 @@
 import Input from "./Input";
 import DatePicker from "./DatePicker";
+import DateRangePicker from "./DatePick";
 import Select from "./Select";
 import CheckBox from "./CheckBox";
 import Radio from "./Radio";
@@ -14,4 +15,5 @@ export const Components = {
   Radio,
   Rate,
   Switch,
+  DateRangePicker,
 };

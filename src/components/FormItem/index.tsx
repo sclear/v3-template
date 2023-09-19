@@ -8,14 +8,33 @@ import { ApiType } from "../../hook/useServer";
 import { getValueByPath } from "../../tools/util";
 import { ruleHelper } from "../Form/rule.helper";
 
+const isArray = Array.isArray;
+
 export { createRules };
 export type FormType<T> = FormGroupType<T> | FormSettingType<T>;
+
+type Model = string | string[];
 
 type FormGroupType<T> = {
   children: FormSettingType<T>[];
   row?: number[];
   vIf?: (args: { value: unknown; model: string; data: RefValue<T> }) => boolean;
 };
+
+function getStrAryValue(data: Ref<any>, model?: Model): any[] | any {
+  if (!model) return "";
+
+  if (isArray(model)) {
+    return model.map((key) => {
+      return getValueByPath(data.value, key || "");
+    });
+  }
+  return getValueByPath(data.value, model || "");
+}
+
+function getFirstModel(model: Model): string {
+  return isArray(model) ? model[0] : model;
+}
 
 export function isFormGroupType(formItem: any): formItem is FormGroupType<any> {
   if (formItem.children) {
@@ -27,25 +46,25 @@ export function isFormGroupType(formItem: any): formItem is FormGroupType<any> {
 export type FormSettingType<T> = {
   type?: keyof typeof Components;
   label?: string;
-  model?: string;
+  model?: Model;
   row?: number[];
   align?: "left" | "right" | "center";
-  vIf?: (args: { value: unknown; model: string; data: RefValue<T> }) => boolean;
+  vIf?: (args: { value: unknown; model: Model; data: RefValue<T> }) => boolean;
   vDisabled?: (args: {
     value: unknown;
-    model: string;
+    model: Model;
     data: RefValue<T>;
     api: ApiType;
   }) => boolean;
   render?: (args: {
-    model: string;
+    model: Model;
     value: any;
     data: RefValue<T>;
     disabled: ComputedRef<boolean>;
   }) => JSX.Element | string;
   top?: string | number;
   renderFormItem?: (args: {
-    model: string;
+    model: Model;
     value: any;
     data: RefValue<T>;
     disabled: ComputedRef<boolean>;
@@ -181,7 +200,12 @@ function renderItem(
 
   if (item.createRule) {
     const ruleOrInstanceRule = item.createRule(createRules, unref(option.data));
-    rule.rules = ruleHelper(ruleOrInstanceRule, item.model || "", [item]);
+    console.log(getFirstModel(item.model || ""));
+    rule.rules = ruleHelper(
+      ruleOrInstanceRule,
+      getFirstModel(item.model || ""),
+      [item]
+    );
   }
 
   // computed v-if
@@ -192,7 +216,8 @@ function renderItem(
         // item.model &&
         item.vIf({
           model: item.model || "",
-          value: getValueByPath(props.data.value, item.model || ""),
+          // value: getValueByPath(props.data.value, item.model || ""),
+          value: getStrAryValue(props.data, item.model),
           data: unref(props.data),
         })) ||
       item.vIf === undefined
@@ -210,9 +235,10 @@ function renderItem(
       item.vDisabled &&
       item.vDisabled({
         model: item.model || "",
-        value: item.model
-          ? getValueByPath(props.data.value, item.model)
-          : props.data.value,
+        value: getStrAryValue(props.data, item.model),
+        // value: item.model
+        //   ? getValueByPath(props.data.value, item.model)
+        //   : props.data.value,
         data: unref(props.data),
         api: props.api,
       }) === false
@@ -225,7 +251,8 @@ function renderItem(
       item.vDisabled &&
       item.vDisabled({
         model: item.model || "",
-        value: getValueByPath(props.data.value, item.model),
+        value: getStrAryValue(props.data, item.model),
+        // value: getValueByPath(props.data.value, item.model),
         data: unref(props.data),
         api: props.api,
       })
@@ -286,7 +313,7 @@ function renderItem(
             >
               {item.render({
                 model: item.model,
-                value: getValueByPath(props.data.value, item.model),
+                value: getStrAryValue(props.data, item.model),
                 data: unref(props.data),
                 disabled: disabled,
               })}
@@ -303,11 +330,11 @@ function renderItem(
             labelWidth={item.labelWidth || undefined}
             label={item.label ? item.label + ":" : ""}
             class={item.className}
-            prop={item.model}
+            prop={getFirstModel(item.model)}
           >
             {item.renderFormItem({
               model: item.model,
-              value: getValueByPath(props.data.value, item.model),
+              value: getStrAryValue(props.data, item.model),
               data: unref(props.data),
               disabled: disabled,
             })}
@@ -362,7 +389,7 @@ function renderItem(
           labelWidth={item.labelWidth || undefined}
           label={item.label ? item.label + ":" : ""}
           class={item.className}
-          prop={item.model}
+          prop={getFirstModel(item.model || "")}
           {...rule}
         >
           <CustomComponent
@@ -370,14 +397,25 @@ function renderItem(
             modelValue={
               childProp.defaultValue !== undefined
                 ? childProp.defaultValue
-                : getValueByPath(props.data.value, item.model || "")
+                : getStrAryValue(props.data, item.model)
             }
             onUpdate:modelValue={(e) => {
               if (!item.defaultValue) {
-                setValueByPath(props.data.value, item.model || "", e);
+                if (isArray(item.model)) {
+                  console.log(e);
+                  if (!e?.key) {
+                    console.error(
+                      "fast-error: model为Array的列, 基础组件须携带key value"
+                    );
+                    return;
+                  }
+                  const { key, value } = e;
+                  setValueByPath(props.data.value, key, value);
+                } else {
+                  setValueByPath(props.data.value, item.model || "", e);
+                }
               }
             }}
-            // v-model={props.data.value[item.model]}
           />
         </ElFormItem>
       </ElCol>

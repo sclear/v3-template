@@ -2,7 +2,7 @@ import { PropType, Ref, ComputedRef } from "vue";
 
 export const propsType = {
   model: {
-    type: String,
+    type: [String, Array],
   },
   modelValue: {
     type: [String, Number, Array],
