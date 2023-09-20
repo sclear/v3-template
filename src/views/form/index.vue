@@ -1,5 +1,6 @@
 <template>
   <!-- <ElInput v-model="k"></ElInput> -->
+  {{ searchFormRule.data }}
   <ElCard>
     <template #header> basics </template>
     <Form ref="searchFormRef" :createOption="searchForm" />
@@ -78,6 +79,13 @@ const searchForm = CreateFormOption({
           ],
         };
       }),
+      {
+        render() {
+          return (
+            <ElButton onClick={() => searchForm.validate()}>submit</ElButton>
+          );
+        },
+      },
     ];
   },
   data: ref({
@@ -87,6 +95,12 @@ const searchForm = CreateFormOption({
       { name: 4, age: 100 },
     ],
   }),
+  onSuccess() {
+    console.log("success");
+  },
+  onError() {
+    console.log("error");
+  },
 });
 
 const searchFormRefVIf = ref();
@@ -210,12 +224,13 @@ setTimeout(() => {
 }, 5000);
 const searchFormRefRule = ref();
 const searchFormRule = CreateFormOption({
+  labelWidth: 80,
   form: [
     {
       type: "Input",
       label: "names",
-      model: "obj.link.0.name",
-      row: [8],
+      model: "obj",
+      row: [6],
     },
     {
       type: "Select",
@@ -231,11 +246,17 @@ const searchFormRule = CreateFormOption({
           label: "女",
         },
       ],
-      row: [8],
+      row: [6],
     },
     {
-      row: [8],
-      align: "center",
+      type: "DateRangePicker",
+      label: "时间",
+      model: ["startTime", "endTime"],
+      row: [6],
+    },
+    {
+      row: [6],
+      align: "right",
       render() {
         return (
           <>
@@ -252,28 +273,16 @@ const searchFormRule = CreateFormOption({
       },
     },
   ],
-  api: "update",
   data: ref({
-    val: "Please Input",
-    obj: {
-      link: [
-        {
-          o: "",
-        },
-      ],
-    },
+    val: "",
+    obj: "",
+    startTime: "2023-11-22",
+    endTime: "2023-11-23",
   }),
-  requestData(data, api) {
-    return {
-      data: {},
-      urlParams: "",
-      // successMessage: ""
-    };
-  },
   createRule(create, data) {
     return {
-      "obj.link.0.name": create.required(),
-      phone: create.equal(data, "val", "obj"),
+      obj: create.required(),
+      startTime: create.required(),
     };
   },
   onSuccess(done) {

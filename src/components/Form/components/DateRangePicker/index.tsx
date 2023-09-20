@@ -1,12 +1,13 @@
 import { defineComponent, unref } from "vue";
 import { ElDatePicker } from "element-plus";
-import { propsType } from "./../propsType";
+import { propsType } from "../propsType";
 
 export default defineComponent({
   props: propsType,
   emits: ["update:modelValue", "change"],
   setup(props, { emit }) {
-    const { placeholder, label, model, disabled, customProps } = props;
+    const { placeholder, label, disabled, customProps } = props;
+    const model: [string, string] = props.model as any;
     return () => (
       <>
         <ElDatePicker
@@ -18,12 +19,12 @@ export default defineComponent({
           end-placeholder="结束时间"
           onUpdate:modelValue={(e: any) => {
             emit("update:modelValue", {
-              key: props.model[0],
+              key: model[0],
               value: e[0],
             });
             emit("change", e[0], model[0]);
             emit("update:modelValue", {
-              key: props.model[1],
+              key: model[1],
               value: e[1],
             });
             emit("change", e[1], model[1]);

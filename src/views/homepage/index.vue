@@ -1,5 +1,4 @@
 <template>
-  {{ searchForm.data }}
   <Form ref="searchFormRef" :createOption="searchForm" />
   <Table
     ref="tableRef"
@@ -61,7 +60,7 @@ const searchForm = CreateFormOption({
     },
     {
       type: "DatePicker",
-      label: "出生日期",
+      label: "日期范围",
       model: "startTime",
       defaultValue(data) {
         return [data.startTime, data.endTime];

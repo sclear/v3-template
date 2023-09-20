@@ -42,8 +42,11 @@ export function CreateFormOption<T = any, K extends keyof RefValue<T> = never>(
     }),
     // data: ref(option.data),
     instance: ref(),
-    reset: () => {},
+    reset: () => {
+      console.warn("fast-warning: 请勿在Form初始化时调用Form reset");
+    },
     validate: function (done?: (isClose?: boolean) => void): Promise<boolean> {
+      console.warn("fast-warning: 请勿在Form初始化时调用Form validate");
       return new Promise((resolve, reject) => {});
     },
   };

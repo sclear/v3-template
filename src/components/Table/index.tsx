@@ -49,7 +49,9 @@ export function CreateTableOption(option: CreateTable) {
   return {
     data: ref<any[]>([]),
     ...option,
-    run() {},
+    run() {
+      console.warn("fast-warning: 请勿在Table初始化时调用Table run");
+    },
   };
 }
 

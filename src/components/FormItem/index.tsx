@@ -402,7 +402,6 @@ function renderItem(
             onUpdate:modelValue={(e) => {
               if (!item.defaultValue) {
                 if (isArray(item.model)) {
-                  console.log(e);
                   if (!e?.key) {
                     console.error(
                       "fast-error: model为Array的列, 基础组件须携带key value"
