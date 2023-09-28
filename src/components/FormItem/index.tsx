@@ -18,7 +18,7 @@ type Model = string | string[];
 type FormGroupType<T> = {
   children: FormSettingType<T>[];
   row?: number[];
-  vIf?: (args: { value: unknown; model: string; data: RefValue<T> }) => boolean;
+  vIf?: (args: { value: unknown; model: Model; data: RefValue<T> }) => boolean;
 };
 
 function getStrAryValue(data: Ref<any>, model?: Model): any[] | any {
@@ -49,6 +49,11 @@ export type FormSettingType<T> = {
   model?: Model;
   row?: number[];
   align?: "left" | "right" | "center";
+  labelWidth?: number;
+  placeholder?: string;
+  className?: string;
+  dataSource?: Ref<any[]> | any[];
+  customProps?: object;
   vIf?: (args: { value: unknown; model: Model; data: RefValue<T> }) => boolean;
   vDisabled?: (args: {
     value: unknown;
@@ -69,12 +74,8 @@ export type FormSettingType<T> = {
     data: RefValue<T>;
     disabled: ComputedRef<boolean>;
   }) => JSX.Element | string;
-  labelWidth?: number;
-  placeholder?: string;
-  className?: string;
+  renderLabel?: () => JSX.Element | string;
   onChange?: (data: { value: any; type: string; data: RefValue<T> }) => void;
-  dataSource?: Ref<any[]> | any[];
-  customProps?: object;
   defaultValue?: (data: RefValue<T>) => any;
   createRule?: (
     ruleInstance: typeof createRules,
@@ -100,7 +101,7 @@ export type CreateFormOptions<T = any, K = unknown> = {
   labelWidth?: number;
   api?: ApiType | Ref<ApiType>;
   customProps?: any;
-  tableRef?: Ref<any>;
+  tableInstance?: Ref<any>;
   loading?: Ref<boolean>;
   requestData?: (data: RefValue<T>, api: ApiType) => any;
   onChange?: (data: {
@@ -110,6 +111,7 @@ export type CreateFormOptions<T = any, K = unknown> = {
   }) => void;
   onSuccess?: (done: () => void, data: RefValue<T>, requestData?: any) => void;
   onError?: (done: () => void) => void;
+  onReady?: () => void;
   createRule?: (
     ruleInstance: typeof createRules,
     data: RefValue<T>
@@ -381,13 +383,18 @@ function renderItem(
     },
     defaultValue: item.defaultValue && item.defaultValue(unref(props.data)),
   };
-
+  const labelSlot = item.renderLabel
+    ? {
+        label: item.renderLabel(),
+      }
+    : {};
   return (
     <>
       <ElCol span={rowSpan} offset={rowOffset}>
         <ElFormItem
           labelWidth={item.labelWidth || undefined}
           label={item.label ? item.label + ":" : ""}
+          v-slots={labelSlot}
           class={item.className}
           prop={getFirstModel(item.model || "")}
           {...rule}

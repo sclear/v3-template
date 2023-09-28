@@ -25,7 +25,7 @@ import { omit } from "@/tools/util";
 
 export { createRules };
 
-export function CreateFormOption<T = any, K extends keyof RefValue<T> = never>(
+export function CreateForm<T = any, K extends keyof RefValue<T> = never>(
   option: CreateFormOptions<T, K>
 ) {
   return {
@@ -58,7 +58,7 @@ export default defineComponent({
     // TODO: fix type
     createOption: {
       type: Object as unknown as PropType<any>,
-      // ReturnType<typeof CreateFormOption<any>>
+      // ReturnType<typeof CreateForm<any>>
       default: {
         data: ref({}),
         form: [],
@@ -80,6 +80,7 @@ export default defineComponent({
     let store: any = [];
 
     const elFormRef = ref();
+
     props.createOption.instance = elFormRef;
 
     store = JSON.parse(JSON.stringify(props.createOption.data.value));
@@ -91,10 +92,12 @@ export default defineComponent({
         elFormRef.value.resetFields();
       }, 4);
 
-      // has tableRef reset pagination
-      if (props.createOption.tableRef) {
-        props.createOption.tableRef?.value?.run &&
-          props.createOption.tableRef?.value?.run(true);
+      // has tableInstance reset pagination
+      if (props.createOption.tableInstance) {
+        props.createOption.tableInstance?.value?.run &&
+          props.createOption.tableInstance?.value?.run(true);
+        props.createOption.tableInstance?.run &&
+          props.createOption.tableInstance?.run(true);
       }
     }
     props.createOption.reset = reset;
@@ -114,6 +117,8 @@ export default defineComponent({
 
     onMounted(() => {
       dialog?.setFormInstance && dialog?.setFormInstance(instance);
+
+      props.createOption.onReady && props.createOption.onReady();
     });
 
     const { createOption } = props;

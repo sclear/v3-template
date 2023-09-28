@@ -18,11 +18,14 @@ export default defineComponent({
           start-placeholder="开始时间"
           end-placeholder="结束时间"
           onUpdate:modelValue={(e: any) => {
+            e = e || ["", ""];
+
             emit("update:modelValue", {
               key: model[0],
               value: e[0],
             });
             emit("change", e[0], model[0]);
+
             emit("update:modelValue", {
               key: model[1],
               value: e[1],
