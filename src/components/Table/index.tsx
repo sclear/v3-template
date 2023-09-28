@@ -5,6 +5,7 @@ import { ElTable, ElPagination, ElTableColumn } from "element-plus";
 import { omit } from "../../tools/util";
 import { useServer, ApiType, UseServerConfig } from "../../hook/useServer";
 import { setting } from "@/tools/setting/setting";
+import { Components } from "./components";
 
 type UseServerProps = Pick<
   UseServerConfig<any, any, any>,
@@ -45,7 +46,7 @@ interface CreateTable {
 }
 
 // 生成Table数据
-export function CreateTableOption(option: CreateTable) {
+export function CreateTable(option: CreateTable) {
   return {
     data: ref<any[]>([]),
     ...option,
@@ -94,6 +95,16 @@ function deepResolver(jsxNodes: any[], formatRowText?: FormatRowText) {
     } else {
       slots = {
         default: (slots: SlotsParams) => {
+          if (prop.type) {
+            const component = Components[prop.type as keyof typeof Components];
+            return (
+              <component
+                value={slots?.row[prop?.prop]}
+                data={slots.row}
+                index={slots.$index}
+              />
+            );
+          }
           return item.render
             ? item.render(slots?.row[prop?.prop], slots.row, slots.$index)
             : slots?.row[prop?.prop];
@@ -119,6 +130,7 @@ interface Column {
   customProps?: Record<string, unknown>;
   children?: Column[];
   vIf?: (() => boolean) | boolean | Ref<boolean>;
+  type?: keyof typeof Components;
   render?: (
     text: string,
     row: any,
@@ -129,7 +141,7 @@ interface Column {
 export default defineComponent({
   props: {
     createOption: {
-      type: Object as PropType<ReturnType<typeof CreateTableOption>>,
+      type: Object as PropType<ReturnType<typeof CreateTable>>,
       default: [],
     },
     beforeSetData: {

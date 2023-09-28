@@ -4,6 +4,7 @@ import { activeRoutes } from "@/router/modules/active.router";
 import router from "@/router";
 import { listToTree } from "@/tools/util";
 import { reactive, toRefs } from "vue";
+import { useRoute } from "vue-router";
 
 interface MenuItem {
   path: string;
@@ -95,6 +96,7 @@ export const useSetting = defineStore(
 
     // tab新增
     function addTab(tab: Tab) {
+      console.log(tab);
       const isRepetition = state.tabs.some((item: Tab) => {
         if (item.path === tab.path) {
           state.currentTab = tab.name;
@@ -137,6 +139,8 @@ export const useSetting = defineStore(
     function registerRoute(): Promise<any> {
       return new Promise((resolve, reject) => {
         const menuJsonPaths = menuJson.map((item) => item.path);
+        flatMenu();
+
         const registerRoutes = asyncRoutes.filter((item: any) => {
           return (
             item.meta.permission === false || menuJsonPaths.includes(item.path)
@@ -182,6 +186,11 @@ export const useSetting = defineStore(
       state.flatMenu = menus;
     }
 
+    function initRoute() {
+      const route = useRoute();
+      state.currentTab = route.path || "/homepage";
+    }
+
     return {
       ...toRefs(state),
       changeCollapse,
@@ -189,6 +198,7 @@ export const useSetting = defineStore(
       registerRoute,
       removeTab,
       addTab,
+      initRoute,
     };
   },
   {
