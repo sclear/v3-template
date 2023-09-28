@@ -1,31 +1,33 @@
 <template>
-  <Form ref="searchFormRef" :createOption="searchForm" />
-  <Table
-    ref="tableRef"
-    :createOption="tableOption"
-    :search-params="searchForm.omitData"
-    class="mt-2"
-  >
-    <Dialog :width="900" ref="dialogRef">
-      <Form :freeze="true" :createOption="dialogForm" />
-    </Dialog>
-  </Table>
+  <div>
+    <Form ref="searchFormRef" :createOption="searchForm" />
+    <Table
+      ref="tableRef"
+      :createOption="tableOption"
+      :search-params="searchForm.omitData"
+      class="mt-2"
+    >
+      <Dialog :width="900" ref="dialogRef">
+        <Form :freeze="true" :createOption="dialogForm" />
+      </Dialog>
+    </Table>
+  </div>
 </template>
 
 <script lang="tsx" setup>
 import { ElMessage, ElCard, ElRow, ElCol } from "element-plus";
 import { ref, computed, onMounted } from "vue";
 import { ElButton, ElInput } from "element-plus";
-import Table, { CreateTableOption } from "./../../components/Table";
-import Form, { CreateFormOption } from "./../../components/Form/index";
+import Table, { CreateTable } from "./../../components/Table";
+import Form, { CreateForm } from "./../../components/Form/index";
 import Dialog from "./../../components/Dialog";
 import { useServer } from "@/entry";
 
 const dialogRef = ref();
 const searchFormRef = ref();
 const tableRef = ref();
-const searchForm = CreateFormOption({
-  tableRef,
+const searchForm = CreateForm({
+  tableInstance: tableRef,
   row: [8],
   form: [
     {
@@ -127,7 +129,7 @@ const searchForm = CreateFormOption({
   },
 });
 
-const dialogForm = CreateFormOption({
+const dialogForm = CreateForm({
   form: [
     {
       type: "Input",
@@ -199,9 +201,14 @@ const dialogForm = CreateFormOption({
   },
 });
 
-const tableOption = CreateTableOption({
+const tableOption = CreateTable({
   api: "list",
-  autoRun: true,
+  autoRun: false,
+  data: ref([
+    {
+      name: "23233",
+    },
+  ]),
   column: [
     {
       label: "序号",
@@ -210,8 +217,9 @@ const tableOption = CreateTableOption({
       },
     },
     {
-      prop: "name",
-      label: "姓名",
+      prop: "tag",
+      label: "标签",
+      type: "Tag",
     },
     {
       prop: "birth",

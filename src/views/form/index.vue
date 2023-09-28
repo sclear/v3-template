@@ -1,6 +1,5 @@
 <template>
   <!-- <ElInput v-model="k"></ElInput> -->
-  {{ searchFormRule.data }}
   <ElCard>
     <template #header> basics </template>
     <Form ref="searchFormRef" :createOption="searchForm" />
@@ -29,12 +28,12 @@
 <script lang="tsx" setup>
 import { ref, Ref } from "vue";
 import { ElButton, ElCard, ElInput, ElMessage } from "element-plus";
-import Form, { CreateFormOption } from "@/components/Form/index";
+import Form, { CreateForm } from "@/components/Form/index";
 import { omit } from "@/tools/util";
 
 const searchFormRef = ref();
 
-const searchForm = CreateFormOption({
+const searchForm = CreateForm({
   form({ data, vFor }) {
     return [
       ...vFor(data.arr, (item, index) => {
@@ -104,12 +103,16 @@ const searchForm = CreateFormOption({
 });
 
 const searchFormRefVIf = ref();
-const searchFormVIf = CreateFormOption({
+const searchFormVIf = CreateForm({
+  omit: ["name"],
   form: [
     {
       type: "Select",
       label: "vIfName",
       model: "showName",
+      renderLabel() {
+        return <div>title</div>;
+      },
       dataSource: [
         {
           value: 1,
@@ -127,7 +130,7 @@ const searchFormVIf = CreateFormOption({
       label: "name",
       model: "name",
       row: [8],
-      vIf({ data, value }) {
+      vIf({ data }) {
         return data.showName === 1;
       },
       vDisabled({ data }) {
@@ -165,7 +168,7 @@ setTimeout(() => {
   searchFormVIf.data.value.showName = 1;
 }, 10000);
 const searchFormRefRender = ref();
-const searchFormRender = CreateFormOption({
+const searchFormRender = CreateForm({
   form: [
     {
       align: "left",
@@ -193,7 +196,7 @@ const searchFormRender = CreateFormOption({
 });
 
 const searchFormRefRenderFormItem = ref();
-const searchFormRenderFormItem = CreateFormOption({
+const searchFormRenderFormItem = CreateForm({
   form: [
     {
       row: [6],
@@ -223,14 +226,14 @@ setTimeout(() => {
   searchFormRenderFormItem.data.value.val = "234234";
 }, 5000);
 const searchFormRefRule = ref();
-const searchFormRule = CreateFormOption({
+const searchFormRule = CreateForm({
   labelWidth: 80,
+  row: [6],
   form: [
     {
       type: "Input",
       label: "names",
       model: "obj",
-      row: [6],
     },
     {
       type: "Select",
@@ -246,16 +249,13 @@ const searchFormRule = CreateFormOption({
           label: "女",
         },
       ],
-      row: [6],
     },
     {
       type: "DateRangePicker",
       label: "时间",
       model: ["startTime", "endTime"],
-      row: [6],
     },
     {
-      row: [6],
       align: "right",
       render() {
         return (

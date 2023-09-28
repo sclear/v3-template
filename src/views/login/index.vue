@@ -14,12 +14,12 @@ import { ref, ExtractPropTypes } from "vue";
 import { useValidate } from "./../../hook/useValidate/";
 import { useRouter } from "vue-router";
 import { useSetting } from "@/store/setting";
-import Form, { CreateFormOption } from "@/components/Form/index";
+import Form, { CreateForm } from "@/components/Form/index";
 const router = useRouter();
 const setting = useSetting();
 const formRef = ref();
 
-const createLoginForm = CreateFormOption({
+const createLoginForm = CreateForm({
   data: ref({
     user: "",
     pass: "",
@@ -47,6 +47,7 @@ const createLoginForm = CreateFormOption({
         return (
           <ElButton
             onClick={() => formRef.value.validate()}
+            loading={createLoginForm.loading.value}
             type="primary"
             class="w-full mt-6"
           >

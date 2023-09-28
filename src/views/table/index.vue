@@ -1,19 +1,21 @@
 <template>
   <div>
-    <ElButton @click="search" type="primary">查询</ElButton>
+    <div>
+      <ElButton @click="search" type="primary">查询</ElButton>
+    </div>
+    <Table
+      ref="tableRef"
+      :createOption="tableOption"
+      :search-params="{}"
+      class="mt-2"
+    />
   </div>
-  <Table
-    ref="tableRef"
-    :createOption="tableOption"
-    :search-params="{}"
-    class="mt-2"
-  />
 </template>
 
 <script lang="tsx" setup>
 import { ref } from "vue";
 import { ElButton } from "element-plus";
-import Table, { CreateTableOption } from "@/components/Table";
+import Table, { CreateTable } from "@/components/Table";
 
 const tableRef = ref();
 
@@ -22,7 +24,7 @@ const search = () => {
   tableRef.value.run();
 };
 
-const tableOption = CreateTableOption({
+const tableOption = CreateTable({
   api: "list",
   column: [
     {

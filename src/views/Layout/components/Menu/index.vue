@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full relative el-menu-height">
+  <div class="w-full relative z-20 el-menu-height">
     <ElMenu
       :default-active="setting.currentTab"
       :router="true"
@@ -19,7 +19,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { ElMenu, ElIcon } from "element-plus";
 import { ArrowLeft } from "@element-plus/icons-vue";
 import MenuItem from "./menuItem";
@@ -27,11 +27,13 @@ import { useSetting } from "@/store/setting";
 
 const setting = useSetting();
 
-const isCollapse = ref(false);
-
 const handleOpen = (key: string, keyPath: string[]) => {};
 
 const handleClose = (key: string, keyPath: string[]) => {};
+
+onMounted(() => {
+  // setting.initRoute();
+});
 </script>
 
 <style lang="less">
