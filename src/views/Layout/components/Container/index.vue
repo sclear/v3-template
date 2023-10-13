@@ -14,7 +14,6 @@
   height: calc(100vh - 105px);
   overflow-y: auto;
   padding: 15px 15px 0 15px;
-  width: 1193px;
 }
 
 // 透明度

@@ -13,6 +13,7 @@ import {
   ComputedRef,
   unref,
   Ref,
+  provide,
 } from "vue";
 import { ElForm, ElRow } from "element-plus";
 import createRules, { isCreateValidateInstance } from "./../../tools/validate";
@@ -22,12 +23,15 @@ export * from "./../FormItem";
 import { RuleItem } from "async-validator";
 import { ruleHelper } from "./rule.helper";
 import { omit } from "@/tools/util";
+import { watch } from "fs";
 
 export { createRules };
 
 export function CreateForm<T = any, K extends keyof RefValue<T> = never>(
   option: CreateFormOptions<T, K>
 ) {
+  const cache = JSON.parse(JSON.stringify(unref(option.data || {})));
+
   return {
     ...option,
     loading: ref(false),
@@ -49,10 +53,11 @@ export function CreateForm<T = any, K extends keyof RefValue<T> = never>(
       console.warn("fast-warning: 请勿在Form初始化时调用Form validate");
       return new Promise((resolve, reject) => {});
     },
+    cache,
   };
 }
 
-export default defineComponent({
+const Form = defineComponent({
   name: "createForm",
   props: {
     // TODO: fix type
@@ -77,20 +82,23 @@ export default defineComponent({
   },
   emit: ["update:data"],
   setup(props, { expose, emit }) {
-    let store: any = [];
+    // let store: any = [];
 
     const elFormRef = ref();
 
     props.createOption.instance = elFormRef;
 
-    store = JSON.parse(JSON.stringify(props.createOption.data.value));
+    // store = JSON.parse(JSON.stringify(props.createOption.data.value));
 
     function reset() {
       // 初始化data
-      props.createOption.data.value = JSON.parse(JSON.stringify(store));
-      setTimeout(() => {
-        elFormRef.value.resetFields();
-      }, 4);
+      props.createOption.data.value = JSON.parse(
+        JSON.stringify(props.createOption.cache)
+      );
+      // setTimeout(() => {
+      elFormRef.value.clearValidate();
+      // elFormRef.value.resetFields();
+      // }, 4);
 
       // has tableInstance reset pagination
       if (props.createOption.tableInstance) {
@@ -148,10 +156,13 @@ export default defineComponent({
                   : { successMessage: "操作成功" }),
 
                 onSuccess(resp, res) {
-                  createOption.loading!.value = false;
                   if (res.code === 200) {
                     if (createOption.onSuccess) {
-                      createOption.onSuccess(cb, unref(createOption.data), res);
+                      createOption.onSuccess({
+                        done: cb,
+                        data: unref(createOption.data),
+                        response: res,
+                      });
                     } else {
                       cb();
                       if (!props.freeze) {
@@ -162,16 +173,29 @@ export default defineComponent({
                   }
                 },
                 onError() {
-                  createOption.loading!.value = false;
                   cb && cb(false);
                   createOption.onError && createOption.onError(cb);
+                },
+                end() {
+                  createOption.loading!.value = false;
                 },
               });
               run();
               return;
             }
             createOption.onSuccess &&
-              createOption.onSuccess(cb, unref(createOption.data.value));
+              createOption.onSuccess({
+                done: cb,
+                data: unref(createOption.data),
+              });
+
+            // has tableInstance reset pagination
+            if (props.createOption.tableInstance) {
+              props.createOption.tableInstance?.value?.run &&
+                props.createOption.tableInstance?.value?.run(true);
+              props.createOption.tableInstance?.run &&
+                props.createOption.tableInstance?.run(true);
+            }
           } else {
             cb && cb(false);
             createOption.onError && createOption.onError(cb);
@@ -190,6 +214,11 @@ export default defineComponent({
       resetFields(e: any) {
         elFormRef.value.resetFields(e);
       },
+    });
+
+    provide("TriggerFunctional", {
+      reset,
+      validate,
     });
 
     let formRules =
@@ -229,3 +258,5 @@ export default defineComponent({
     );
   },
 });
+
+export default Form;

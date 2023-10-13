@@ -86,7 +86,7 @@ export default defineComponent({
         return;
       }
 
-      // if props has confirm callback
+      // has confirm callback
       if (props.confirm) {
         props.confirm((isClose?: boolean) => {
           if (isClose || isClose === undefined) {
@@ -167,6 +167,11 @@ export default defineComponent({
         dialogTitle.value = params.title || "";
         dialogDisabled.value = params.disabled || false;
         visible.value = true;
+      },
+      close() {
+        props.cancel && props.cancel();
+        cancelCallReset();
+        visible.value = false;
       },
     });
 

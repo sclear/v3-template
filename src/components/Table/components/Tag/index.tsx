@@ -4,7 +4,12 @@ import { propsType } from "./../propsType";
 
 export default defineComponent({
   props: propsType,
-  setup(props) {
-    return () => <ElTag>{props.value}</ElTag>;
+  setup(props: any) {
+    return () => (
+      <>
+        <ElTag>{props.value[0] || ""}</ElTag>
+        {props.value[1]}
+      </>
+    );
   },
 });

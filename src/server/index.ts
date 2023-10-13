@@ -8,14 +8,64 @@ export const api = {
   list: {
     method: "get",
     url: "https://mock.mengxuegu.com/mock/635605c88c53a558a4840c72/test/list",
-    _Mock_: false,
-    Mock: {
-      code: 200,
-      data: [
-        {
-          name: "小红",
-        },
-      ],
+    _Mock_: true,
+    Mock: ({ data }: any) => {
+      console.log(data.page.pageNo);
+      const list: any = {
+        1: [
+          {
+            name: "小红",
+            tag: "tag",
+            des: "简单的描述",
+          },
+          {
+            name: "小红",
+            tag: "tag",
+            des: "简单的描述",
+          },
+          {
+            name: "小红",
+            tag: "tag",
+            des: "简单的描述",
+            age: "14",
+            birth: "19/10/03",
+          },
+          {
+            name: "小红",
+            tag: "tag",
+            des: "简单的描述",
+          },
+        ],
+        2: [
+          {
+            name: "小张",
+            tag: "test",
+            des: "不简单的描述",
+          },
+          {
+            name: "小张",
+            tag: "test",
+            des: "不简单的描述",
+          },
+          {
+            name: "小张",
+            tag: "test",
+            des: "不简单的描述",
+            age: "14",
+            birth: "19/10/03",
+          },
+          {
+            name: "小张",
+            tag: "test",
+            des: "不简单的描述",
+          },
+        ],
+      };
+      return {
+        code: 200,
+        count: 15,
+        data: list[data.page.pageNo],
+      };
     },
   },
   createUser: {

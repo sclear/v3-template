@@ -9,6 +9,8 @@ const { getApiModule } = serverSetting;
 
 type InputApi = Parameters<typeof getApiModule>[0];
 
+type ResponseType = "json" | "blob";
+
 export type ApiType = InputApi;
 export interface UseServerConfig<Result, T, U extends string | object> {
   api: InputApi | Ref<InputApi>;
@@ -24,10 +26,11 @@ export interface UseServerConfig<Result, T, U extends string | object> {
   throttleTime?: number;
   debounceTime?: number;
   onError?: (err: any) => void;
-  onSuccess?: (data: Result, ResData: T, response: ResponseData<T>) => void;
-  beforeSetData?: (data: T, response: ResponseData<T>) => Result;
+  onSuccess?: (data: Result, response: ResponseData<T>) => void;
+  beforeSetData?: (data: ResponseData<T>) => Result;
+  responseType?: ResponseType;
   formatRequestCondition?: (requestCondition: { data: U; urlParams: any }) => {
-    responseType?: "json" | "blob";
+    responseType?: ResponseType;
     data?: any;
     urlParams?: string;
   };
@@ -106,16 +109,23 @@ export function useServer<T = any, K = any, U extends object | string = any>(
       httpModule.Mock &&
       import.meta.env.VITE_API_Mock_ === "1"
     ) {
+      const response =
+        typeof httpModule.Mock === "function"
+          ? httpModule.Mock({
+              data: unref(config.data || null),
+              urlParams: unref(config.urlParams || null),
+            })
+          : httpModule.Mock;
       data.value = config.beforeSetData
-        ? config.beforeSetData(httpModule.Mock.data, httpModule.Mock)
-        : httpModule.Mock;
+        ? config.beforeSetData(response)
+        : response;
       setTimeout(() => {
-        config.onSuccess &&
-          config.onSuccess(data.value, httpModule.Mock.data, httpModule.Mock);
+        config.onSuccess && config.onSuccess(data.value, response);
         config.successMessage &&
           ElMessage({ message: config.successMessage, type: "success" });
         loading.value = false;
-      }, 200);
+        config.end && config.end();
+      }, 700);
     } else {
       const formatCondition = {
         data: unref(configData),
@@ -150,11 +160,10 @@ export function useServer<T = any, K = any, U extends object | string = any>(
       )
         .then((res) => {
           if (res.code === 200) {
-            console.log(res.data);
             data.value = config.beforeSetData
-              ? config.beforeSetData(res.data, res)
+              ? config.beforeSetData(res)
               : res.data;
-            config.onSuccess && config.onSuccess(data.value, res.data, res);
+            config.onSuccess && config.onSuccess(data.value, res);
             config.successMessage &&
               ElMessage({ message: config.successMessage, type: "success" });
             console.log(config.successMessage);

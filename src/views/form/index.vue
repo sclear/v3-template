@@ -108,11 +108,8 @@ const searchFormVIf = CreateForm({
   form: [
     {
       type: "Select",
-      label: "vIfName",
+      label: "vIfName12",
       model: "showName",
-      renderLabel() {
-        return <div>title</div>;
-      },
       dataSource: [
         {
           value: 1,
@@ -160,33 +157,27 @@ const searchFormVIf = CreateForm({
     vDisabledName: 0,
   }),
 });
-setTimeout(() => {
-  searchFormVIf.data.value.showName = 0;
-}, 5000);
-setTimeout(() => {
-  // searchFormVIf.data.value.vDisabledName = 1;
-  searchFormVIf.data.value.showName = 1;
-}, 10000);
 const searchFormRefRender = ref();
 const searchFormRender = CreateForm({
+  wrapperCol: {
+    md: 24,
+    lg: 8,
+  },
   form: [
     {
       align: "left",
-      row: [24],
       render() {
         return <ElButton>Render Button(align left)</ElButton>;
       },
     },
     {
       align: "center",
-      row: [24],
       render() {
         return <ElButton>Render Button(align center)</ElButton>;
       },
     },
     {
       align: "right",
-      row: [24],
       render() {
         return <ElButton>Render Button(align right)</ElButton>;
       },
@@ -227,13 +218,12 @@ setTimeout(() => {
 }, 5000);
 const searchFormRefRule = ref();
 const searchFormRule = CreateForm({
-  labelWidth: 80,
   row: [6],
   form: [
     {
       type: "Input",
-      label: "names",
-      model: "obj",
+      label: "name",
+      model: "name",
     },
     {
       type: "Select",
@@ -274,28 +264,16 @@ const searchFormRule = CreateForm({
     },
   ],
   data: ref({
-    val: "",
-    obj: "",
-    startTime: "2023-11-22",
-    endTime: "2023-11-23",
+    sex: "",
+    name: "",
+    startTime: "",
+    endTime: "",
   }),
   createRule(create, data) {
     return {
-      obj: create.required(),
+      sex: create.required(),
       startTime: create.required(),
     };
-  },
-  onSuccess(done) {
-    ElMessage({
-      message: "success !!!",
-      type: "success",
-    });
-  },
-  onError() {
-    ElMessage({
-      message: "error !!!",
-      type: "error",
-    });
   },
 });
 // searchFormRule.api = ''

@@ -19,9 +19,9 @@ import { ElMessage, ElCard, ElRow, ElCol } from "element-plus";
 import { ref, computed, onMounted } from "vue";
 import { ElButton, ElInput } from "element-plus";
 import Table, { CreateTable } from "./../../components/Table";
-import Form, { CreateForm } from "./../../components/Form/index";
+// import Form, { CreateForm } from "./../../components/Form/index";
 import Dialog from "./../../components/Dialog";
-import { useServer } from "@/entry";
+import { useServer, Form, CreateForm } from "@/entry";
 
 const dialogRef = ref();
 const searchFormRef = ref();
@@ -86,28 +86,19 @@ const searchForm = CreateForm({
               onClick={() => {
                 dialogRef.value.open({
                   title: "新增用户",
-                  disabled: false,
                 });
               }}
             >
               新增
             </ElButton>
-            <ElButton
-              type="info"
-              onClick={() => {
-                searchFormRef.value.reset();
-              }}
-            >
-              重置
-            </ElButton>
-            <ElButton
-              type="success"
-              onClick={() => {
-                tableRef.value.run();
-              }}
-            >
-              查询
-            </ElButton>
+
+            <Form.Trigger htmlType="submit" class="ml-12px">
+              <ElButton type="success">查询</ElButton>
+            </Form.Trigger>
+
+            <Form.Trigger htmlType="reset" class="ml-12px">
+              <ElButton type="info">重置</ElButton>
+            </Form.Trigger>
           </>
         );
       },
@@ -124,7 +115,7 @@ const searchForm = CreateForm({
   }),
   createRule(create) {
     return {
-      startTime: create.required(),
+      // startTime: create.required(),
     };
   },
 });
@@ -203,23 +194,31 @@ const dialogForm = CreateForm({
 
 const tableOption = CreateTable({
   api: "list",
-  autoRun: false,
-  data: ref([
-    {
-      name: "23233",
+  autoRun: true,
+  formatRowText(text) {
+    if (text === undefined) {
+      return "-";
+    }
+  },
+  useServerProps: {
+    // beforeSetData(res) {
+    //   return res.data;
+    // },
+    formatRequestCondition({ data }) {
+      return {
+        data,
+      };
     },
-  ]),
+  },
   column: [
     {
+      type: "Index",
       label: "序号",
-      render(text, data, index) {
-        return index + 1;
-      },
     },
     {
-      prop: "tag",
-      label: "标签",
       type: "Tag",
+      prop: ["tag", "des"],
+      label: "标签",
     },
     {
       prop: "birth",
@@ -230,8 +229,8 @@ const tableOption = CreateTable({
       label: "年龄",
     },
     {
-      prop: "xz",
-      label: "星座",
+      prop: "name",
+      label: "年龄",
     },
     {
       label: "操作",
@@ -239,31 +238,25 @@ const tableOption = CreateTable({
         return (
           <>
             <ElButton
+              type="primary"
               onClick={() => {
                 dialogRef.value.open({
                   title: "用户编辑",
                   disabled: false,
                 });
-                dialogForm.data.value = {
-                  name: "",
-                  phone: "",
-                  idCard: "",
-                  birth: "",
-                  age: "",
-                };
+                dialogForm.data.value = { ...data };
               }}
             >
               编辑
             </ElButton>
             <ElButton
-              type="primary"
               onClick={() => {
                 dialogRef.value.open({
                   disabled: true,
                   title: "详情",
                 });
                 dialogForm.data.value = {
-                  name: "pxpx",
+                  name: "px",
                   phone: "1234",
                   idCard: "123234",
                   birth: "2022-02-03",

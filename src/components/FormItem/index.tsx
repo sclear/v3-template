@@ -8,6 +8,14 @@ import { ApiType } from "../../hook/useServer";
 import { getValueByPath } from "../../tools/util";
 import { ruleHelper } from "../Form/rule.helper";
 
+type WrapperCol = {
+  xs?: number;
+  sm?: number;
+  md?: number;
+  lg?: number;
+  xl?: number;
+};
+
 const isArray = Array.isArray;
 
 export { createRules };
@@ -18,6 +26,7 @@ type Model = string | string[];
 type FormGroupType<T> = {
   children: FormSettingType<T>[];
   row?: number[];
+  wrapperCol?: WrapperCol;
   vIf?: (args: { value: unknown; model: Model; data: RefValue<T> }) => boolean;
 };
 
@@ -48,7 +57,8 @@ export type FormSettingType<T> = {
   label?: string;
   model?: Model;
   row?: number[];
-  align?: "left" | "right" | "center";
+  wrapperCol?: WrapperCol;
+  align?: "left" | "right" | "center" | "start" | "end";
   labelWidth?: number;
   placeholder?: string;
   className?: string;
@@ -89,6 +99,12 @@ export type FormSettingType<T> = {
 
 export type RefValue<T> = T extends Ref<infer A> ? A : T;
 
+type SuccessArgs<T> = {
+  done?: () => void;
+  data: RefValue<T>;
+  response?: any;
+};
+
 export type CreateFormOptions<T = any, K = unknown> = {
   form:
     | FormType<T>[]
@@ -98,6 +114,7 @@ export type CreateFormOptions<T = any, K = unknown> = {
   data: T;
   omit?: K[];
   row?: number[];
+  wrapperCol?: WrapperCol;
   labelWidth?: number;
   api?: ApiType | Ref<ApiType>;
   customProps?: any;
@@ -109,7 +126,8 @@ export type CreateFormOptions<T = any, K = unknown> = {
     type: string;
     data: RefValue<T>;
   }) => void;
-  onSuccess?: (done: () => void, data: RefValue<T>, requestData?: any) => void;
+  // onSuccess?: (done: () => void, data: RefValue<T>, requestData?: any) => void;
+  onSuccess?: (args: SuccessArgs<T>) => void;
   onError?: (done: () => void) => void;
   onReady?: () => void;
   createRule?: (
@@ -168,6 +186,7 @@ export function CreateElForm(
                   display: "flex",
                   "flex-wrap": "wrap",
                 }}
+                {...(item.wrapperCol || {})}
                 span={row[0] || 24}
                 offset={row[1] || 0}
               >
@@ -265,6 +284,7 @@ function renderItem(
 
   // align
   const row = item.row || option.row || [24, 0];
+  const wrapperCol = item.wrapperCol || option.wrapperCol || {};
   const rowSpan = row[0] || 24;
   const rowOffset = row[1] || 0;
   const align = item.align || "left";
@@ -272,6 +292,8 @@ function renderItem(
     left: "flex-start",
     center: "center",
     right: "flex-end",
+    start: "flex-start",
+    end: "flex-end",
   };
 
   // render custom component
@@ -279,7 +301,7 @@ function renderItem(
     if (item.render && !item.model) {
       return (
         <>
-          <ElCol span={rowSpan} offset={rowOffset}>
+          <ElCol span={rowSpan} offset={rowOffset} {...wrapperCol}>
             <div
               style={{
                 display: "flex",
@@ -304,6 +326,7 @@ function renderItem(
               marginTop:
                 typeof item.top === "number" ? `${item.top}px` : item.top,
             }}
+            {...wrapperCol}
             span={rowSpan}
             offset={rowOffset}
           >
@@ -326,7 +349,7 @@ function renderItem(
     }
     if (item.renderFormItem && item.model) {
       return (
-        <ElCol span={rowSpan} offset={rowOffset}>
+        <ElCol span={rowSpan} offset={rowOffset} {...wrapperCol}>
           <ElFormItem
             {...rule}
             labelWidth={item.labelWidth || undefined}
@@ -345,7 +368,7 @@ function renderItem(
       );
     } else if (item.renderFormItem && !item.model) {
       return (
-        <ElCol span={rowSpan} offset={rowOffset}>
+        <ElCol span={rowSpan} offset={rowOffset} {...wrapperCol}>
           <ElFormItem
             {...rule}
             labelWidth={item.labelWidth || undefined}
@@ -390,7 +413,7 @@ function renderItem(
     : {};
   return (
     <>
-      <ElCol span={rowSpan} offset={rowOffset}>
+      <ElCol span={rowSpan} offset={rowOffset} {...wrapperCol}>
         <ElFormItem
           labelWidth={item.labelWidth || undefined}
           label={item.label ? item.label + ":" : ""}

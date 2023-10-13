@@ -1,7 +1,8 @@
 export interface ResponseData<T> {
   code: Code;
-  message: string;
+  message?: string;
   data: T;
+  [key: string]: any;
 }
 export type Code = 200 | 404 | 0;
 
@@ -11,10 +12,15 @@ export type ApiType = {
   method: string;
   url: string;
 };
+
+type MockFn = (args: { data: any; urlParams: any }) => ResponseData<any>;
+
+type Mock = ResponseData<any> | MockFn;
+
 export type ApiResult = {
   method: "get" | "post" | "put" | "delete";
   url: string;
-  Mock?: any;
+  Mock?: Mock;
   _Mock_?: boolean;
 };
 

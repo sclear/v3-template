@@ -9,11 +9,17 @@ import { Components } from "./components";
 
 type UseServerProps = Pick<
   UseServerConfig<any, any, any>,
-  "beforeSetData" | "headers" | "autoRun" | "data" | "urlParams" | "default"
+  | "beforeSetData"
+  | "headers"
+  | "autoRun"
+  | "data"
+  | "urlParams"
+  | "default"
+  | "formatRequestCondition"
 >;
 interface SlotsParams {
   row: any[];
-  $index: any[];
+  $index: any;
 }
 
 const defaultProps = {
@@ -28,8 +34,7 @@ type Pagination = {
 
 type FormatRowText = (
   content?: string | number | JSX.Element | undefined,
-  prop?: string,
-  option?: { isRender: boolean }
+  prop?: string
 ) => any;
 
 interface CreateTable {
@@ -57,7 +62,11 @@ export function CreateTable(option: CreateTable) {
 }
 
 // 递归解析tableHeader
-function deepResolver(jsxNodes: any[], formatRowText?: FormatRowText) {
+function deepResolver(
+  jsxNodes: any[],
+  formatRowText?: FormatRowText,
+  pagination?: Pagination
+) {
   if (!jsxNodes || !jsxNodes.length) return;
   return jsxNodes.map((item) => {
     const prop = {
@@ -76,65 +85,92 @@ function deepResolver(jsxNodes: any[], formatRowText?: FormatRowText) {
       }
     }
 
-    // slots & format
+    const rstProp = Array.isArray(prop?.prop) ? prop.prop[0] : prop?.prop;
+
+    // slots & format & !render & !type
     let slots;
-    if (formatRowText) {
+    if (formatRowText && !item.render && !item.type) {
       slots = {
         default: (slots: SlotsParams) => {
-          return item.render
-            ? formatRowText(
-                item.render(slots?.row[prop?.prop], slots.row, slots.$index),
-                prop?.prop,
-                { isRender: true }
-              )
-            : formatRowText(slots?.row[prop?.prop] as any, prop.prop, {
-                isRender: false,
-              });
+          return formatRowText(slots?.row[rstProp] as any, rstProp);
         },
       };
     } else {
       slots = {
         default: (slots: SlotsParams) => {
+          let value: string | string[] = "";
+          if (Array.isArray(prop?.prop)) {
+            value = prop.prop.map((key: any) => slots.row[key]);
+          } else {
+            value = slots.row[rstProp];
+          }
+
+          const index =
+            slots.$index +
+            (pagination?.pageSize || 0) * ((pagination?.currentPage || 0) - 1) +
+            1;
+
+          // render custom Components
           if (prop.type) {
             const component = Components[prop.type as keyof typeof Components];
             return (
               <component
-                value={slots?.row[prop?.prop]}
+                value={value}
                 data={slots.row}
                 index={slots.$index}
+                args={{
+                  index,
+                }}
               />
             );
           }
+
+          // custom render
           return item.render
-            ? item.render(slots?.row[prop?.prop], slots.row, slots.$index)
-            : slots?.row[prop?.prop];
+            ? item.render(value, slots.row, slots.$index, {
+                index,
+              })
+            : slots?.row[rstProp];
         },
       };
     }
+
+    const columnProps = {
+      ...prop,
+      prop: rstProp,
+    };
+
     if (item.children) {
       return (
-        <ElTableColumn {...prop}>{deepResolver(item.children)}</ElTableColumn>
+        <ElTableColumn {...columnProps}>
+          {deepResolver(item.children, formatRowText, pagination)}
+        </ElTableColumn>
       );
     } else
       return (
-        <ElTableColumn v-slots={slots} {...prop}>
-          {deepResolver(item.children, formatRowText)}
+        <ElTableColumn v-slots={slots} {...columnProps}>
+          {deepResolver(item.children, formatRowText, pagination)}
         </ElTableColumn>
       );
   });
 }
 
+type TableColumnProp = string | string[];
+
 interface Column {
-  prop?: string;
+  prop?: TableColumnProp;
   label?: string;
   customProps?: Record<string, unknown>;
   children?: Column[];
   vIf?: (() => boolean) | boolean | Ref<boolean>;
   type?: keyof typeof Components;
   render?: (
-    text: string,
+    text: any,
     row: any,
-    $index: number
+    $index: number,
+    args: {
+      index: number;
+    }
   ) => JSX.Element | string | any;
 }
 
@@ -178,31 +214,8 @@ export default defineComponent({
         ...(unref(props.searchParams || {}) || {}),
       };
     });
-    // const { loading, run, data } = useServer({
-    //   api: props.createOption.api || ("" as any),
-    //   data: params,
-    //   autoRun: props.createOption.api
-    //     ? typeof props.createOption.autoRun === "boolean"
-    //       ? props.createOption.autoRun
-    //       : true
-    //     : false,
-    //   beforeSetData:
-    //     props.createOption.beforeSetData || setting.table.apiBeforeSetData,
-    //   ...(props.createOption.useServerProps || {}),
-    //   onSuccess(res) {
-    //     props.createOption.data.value = unref(data);
-    //     if (
-    //       props.createOption.pagination ||
-    //       props.createOption.pagination === undefined
-    //     ) {
-    //       pagination.total = props.createOption.total
-    //         ? props.createOption.total(res)
-    //         : setting.table.total(res);
-    //     }
-    //   },
-    // });
+
     const loading = ref(false);
-    const data = ref<any>([]);
     function run() {
       loading.value = true;
       useServer({
@@ -214,9 +227,10 @@ export default defineComponent({
             )
           : params,
         ...(props.createOption.useServerProps || {}),
-        onSuccess(resData) {
-          pagination.total = setting.table.total(resData);
-          props.createOption.data.value = unref(resData);
+        onSuccess(res) {
+          console.log(res);
+          pagination.total = setting.table.total(res);
+          props.createOption.data.value = unref(res.data);
         },
         end() {
           loading.value = false;
@@ -252,7 +266,8 @@ export default defineComponent({
         >
           {deepResolver(
             props.createOption.column,
-            props.createOption.formatRowText
+            props.createOption.formatRowText,
+            pagination
           )}
         </ElTable>
         {typeof props.createOption.pagination === "boolean" ? (
