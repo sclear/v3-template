@@ -201,10 +201,7 @@ const tableOption = CreateTable({
     }
   },
   useServerProps: {
-    // beforeSetData(res) {
-    //   return res.data;
-    // },
-    formatRequestCondition({ data }) {
+    beforeRequest({ data }) {
       return {
         data,
       };
@@ -255,16 +252,26 @@ const tableOption = CreateTable({
                   disabled: true,
                   title: "详情",
                 });
-                dialogForm.data.value = {
-                  name: "px",
-                  phone: "1234",
-                  idCard: "123234",
-                  birth: "2022-02-03",
-                  age: "12",
-                };
+                dialogForm.data.value = { ...data };
               }}
             >
               详情
+            </ElButton>
+            <ElButton
+              type="danger"
+              onClick={() => {
+                useServer({
+                  api: "user.del",
+                  data: {
+                    num: index,
+                  },
+                  autoRun: true,
+                  successMessage: "删除成功",
+                  errorMessage: "删除失败",
+                });
+              }}
+            >
+              删除
             </ElButton>
           </>
         );
