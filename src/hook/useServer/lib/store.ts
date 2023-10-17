@@ -3,6 +3,7 @@ import type {
   ApiResult,
   ApiSettings,
   SplitType,
+  ApiModule,
 } from "./index.type";
 export * from "./index.type";
 
@@ -25,4 +26,14 @@ export function createApi<T extends ApiSettings>(api: T) {
       return A as unknown as ApiResult;
     },
   };
+}
+
+/**
+ *
+ * @param {Mock} mock数据
+ * @params {_Mock_} 是否开启Mock
+ * @return {ApiModule}
+ */
+export function createApiModule<T extends ApiModule>(api: T) {
+  return api;
 }

@@ -15,7 +15,7 @@ type UseServerProps = Pick<
   | "data"
   | "urlParams"
   | "default"
-  | "formatRequestCondition"
+  | "beforeRequest"
 >;
 interface SlotsParams {
   row: any[];
@@ -161,6 +161,7 @@ interface Column {
   prop?: TableColumnProp;
   label?: string;
   customProps?: Record<string, unknown>;
+  width?: number;
   children?: Column[];
   vIf?: (() => boolean) | boolean | Ref<boolean>;
   type?: keyof typeof Components;
@@ -227,7 +228,7 @@ export default defineComponent({
             )
           : params,
         ...(props.createOption.useServerProps || {}),
-        onSuccess(res) {
+        onSuccess(resp, res) {
           console.log(res);
           pagination.total = setting.table.total(res);
           props.createOption.data.value = unref(res.data);

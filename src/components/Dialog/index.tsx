@@ -140,16 +140,17 @@ export default defineComponent({
                 props.cancel && props.cancel();
                 cancelCallReset();
                 visible.value = false;
+                buttonLoading.value = false;
               }}
             >
-              {props.confirmText || setting.dialog.cancelText || "取消"}
+              {props.cancelText || setting.dialog.cancelText || "取消"}
             </ElButton>
             <ElButton
               type="primary"
               onClick={closeModel}
               loading={buttonLoading.value}
             >
-              {props.cancelText || setting.dialog.confirmText || "确定"}
+              {props.confirmText || setting.dialog.confirmText || "确定"}
             </ElButton>
           </>
         );
@@ -172,6 +173,7 @@ export default defineComponent({
         props.cancel && props.cancel();
         cancelCallReset();
         visible.value = false;
+        buttonLoading.value = false;
       },
     });
 

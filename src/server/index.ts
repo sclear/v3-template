@@ -1,6 +1,6 @@
-import { createApi } from "@/hook/useServer/lib/store";
+import { createApi, createApiModule } from "@/hook/useServer/lib/store";
 
-export const api = {
+export const api = createApiModule({
   user: {
     method: "get",
     url: "https://mock.mengxuegu.com/mock/635605c88c53a558a4840c72/test/user-list",
@@ -80,18 +80,48 @@ export const api = {
     method: "post",
     url: "https://mock.mengxuegu.com/mock/635605c88c53a558a4840c72/test/full",
   },
-};
+});
 
-const user = {
+const user = createApiModule({
+  del: {
+    method: "get",
+    url: "del",
+    Mock({ data }) {
+      console.log(data);
+      return {
+        code: data.num % 2 === 1 ? 200 : 500,
+        message: "ok",
+        data: false,
+      };
+    },
+  },
   list: {
     method: "get",
-    url: "url1",
+    url: "list",
+    Mock: {
+      code: 200,
+      message: "ok",
+      data: [
+        {
+          type: "唱",
+          value: 1,
+        },
+        {
+          type: "跳",
+          value: 2,
+        },
+        {
+          type: "Rap",
+          value: 3,
+        },
+        {
+          type: "篮球",
+          value: 4,
+        },
+      ],
+    },
   },
-  getIds: {
-    method: "get",
-    url: "url2",
-  },
-};
+});
 
 export default createApi({
   ...api,

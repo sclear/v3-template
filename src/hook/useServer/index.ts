@@ -29,7 +29,7 @@ export interface UseServerConfig<Result, T, U extends string | object> {
   onSuccess?: (data: Result, response: ResponseData<T>) => void;
   beforeSetData?: (data: ResponseData<T>) => Result;
   responseType?: ResponseType;
-  formatRequestCondition?: (requestCondition: { data: U; urlParams: any }) => {
+  beforeRequest?: (requestCondition: { data: U; urlParams: any }) => {
     responseType?: ResponseType;
     data?: any;
     urlParams?: string;
@@ -107,7 +107,7 @@ export function useServer<T = any, K = any, U extends object | string = any>(
     if (
       httpModule._Mock_ !== false &&
       httpModule.Mock &&
-      import.meta.env.VITE_API_Mock_ === "1"
+      import.meta.env.VITE_API_Mock_ == "1"
     ) {
       const response =
         typeof httpModule.Mock === "function"
@@ -116,16 +116,26 @@ export function useServer<T = any, K = any, U extends object | string = any>(
               urlParams: unref(config.urlParams || null),
             })
           : httpModule.Mock;
-      data.value = config.beforeSetData
-        ? config.beforeSetData(response)
-        : response;
-      setTimeout(() => {
-        config.onSuccess && config.onSuccess(data.value, response);
-        config.successMessage &&
-          ElMessage({ message: config.successMessage, type: "success" });
-        loading.value = false;
-        config.end && config.end();
-      }, 700);
+      if (response.code === 200) {
+        setTimeout(() => {
+          data.value = config.beforeSetData
+            ? config.beforeSetData(response)
+            : response.data;
+          config.onSuccess && config.onSuccess(data.value, response);
+          config.successMessage &&
+            ElMessage({ message: config.successMessage, type: "success" });
+          loading.value = false;
+          config.end && config.end();
+        }, 700);
+      } else {
+        setTimeout(() => {
+          config.onError && config.onError(response);
+          config.errorMessage &&
+            ElMessage({ message: config.errorMessage, type: "error" });
+          loading.value = false;
+          config.end && config.end();
+        }, 700);
+      }
     } else {
       const formatCondition = {
         data: unref(configData),
@@ -133,8 +143,8 @@ export function useServer<T = any, K = any, U extends object | string = any>(
       };
 
       // format request condition
-      if (config.formatRequestCondition) {
-        const { data, urlParams } = config.formatRequestCondition({
+      if (config.beforeRequest) {
+        const { data, urlParams } = config.beforeRequest({
           data: unref(configData),
           urlParams: unref(configUrlParams || undefined) || "",
         });

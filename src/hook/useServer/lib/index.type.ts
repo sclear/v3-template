@@ -4,18 +4,27 @@ export interface ResponseData<T> {
   data: T;
   [key: string]: any;
 }
-export type Code = 200 | 404 | 0;
+export type Code = 200 | 300 | 404 | 500;
+
+type Mock = ResponseData<any> | MockFn;
 
 export type IfAny<T, Y, N> = 0 extends 1 & T ? Y : N;
 
 export type ApiType = {
   method: string;
   url: string;
+  // Mock?: Mock;
+  // _Mock_?: boolean;
+};
+
+export type ApiArgs = {
+  method: string;
+  url: string;
+  Mock?: Mock;
+  _Mock_?: boolean;
 };
 
 type MockFn = (args: { data: any; urlParams: any }) => ResponseData<any>;
-
-type Mock = ResponseData<any> | MockFn;
 
 export type ApiResult = {
   method: "get" | "post" | "put" | "delete";
@@ -72,6 +81,10 @@ export type ApiSettings = {
         [prop: string]: ApiType;
       }
     | ApiType;
+};
+
+export type ApiModule = {
+  [prop: string]: ApiArgs;
 };
 
 export type SplitType<
