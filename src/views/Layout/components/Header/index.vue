@@ -1,6 +1,6 @@
 <template>
-  <div class="text-center h-15 lh-15 bg-#409EFF c-white flex">
-    <div class="w-200px">Logo</div>
+  <div class="text-center h-15 lh-15 c-white flex">
+    <div class="w-200px">FastCrud</div>
     <div class="flex-1 flex items-center justify-end">
       <div>
         <ElTooltip content="退出">

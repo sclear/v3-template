@@ -8,7 +8,6 @@ export const api = createApiModule({
   list: {
     method: "get",
     url: "https://mock.mengxuegu.com/mock/635605c88c53a558a4840c72/test/list",
-    _Mock_: true,
     Mock: ({ data }: any) => {
       console.log(data.page.pageNo);
       const list: any = {

@@ -6,7 +6,10 @@
       :collapse="setting.isCollapse"
       @open="handleOpen"
       @close="handleClose"
+      background-color="#ffffff"
       class="el-menu-vertical-demo"
+      active-text-color="#505CAB"
+      text-color="#413d3d"
     >
       <MenuItem :menus="setting.menus" />
     </ElMenu>
@@ -39,6 +42,7 @@ onMounted(() => {
 <style lang="less">
 .el-menu-height {
   // width: 200px;
+  // color: #413d3d;
   min-height: calc(100vh - 60px) !important;
 }
 .w-full {

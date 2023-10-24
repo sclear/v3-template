@@ -8,7 +8,7 @@
       class="mt-2"
     >
       <Dialog :width="900" ref="dialogRef">
-        <Form :freeze="true" :createOption="dialogForm" />
+        <Form :createOption="dialogForm" />
       </Dialog>
     </Table>
   </div>
@@ -19,7 +19,6 @@ import { ElMessage, ElCard, ElRow, ElCol } from "element-plus";
 import { ref, computed, onMounted } from "vue";
 import { ElButton, ElInput } from "element-plus";
 import Table, { CreateTable } from "./../../components/Table";
-// import Form, { CreateForm } from "./../../components/Form/index";
 import Dialog from "./../../components/Dialog";
 import { useServer, Form, CreateForm } from "@/entry";
 

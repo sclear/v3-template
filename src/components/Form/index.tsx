@@ -54,6 +54,12 @@ export function CreateForm<T = any, K extends keyof RefValue<T> = never>(
       return new Promise((resolve, reject) => {});
     },
     cache,
+    setData(
+      data: Partial<Record<keyof RefValue<T>, RefValue<T>[keyof RefValue<T>]>>,
+      clearType: "all" | "default" | "never" = "default"
+    ) {
+      console.warn("fast-warning: 请勿在Form初始化时调用Form setData");
+    },
   };
 }
 
@@ -82,23 +88,16 @@ const Form = defineComponent({
   },
   emit: ["update:data"],
   setup(props, { expose, emit }) {
-    // let store: any = [];
-
     const elFormRef = ref();
 
     props.createOption.instance = elFormRef;
-
-    // store = JSON.parse(JSON.stringify(props.createOption.data.value));
 
     function reset() {
       // 初始化data
       props.createOption.data.value = JSON.parse(
         JSON.stringify(props.createOption.cache)
       );
-      // setTimeout(() => {
       elFormRef.value.clearValidate();
-      // elFormRef.value.resetFields();
-      // }, 4);
 
       // has tableInstance reset pagination
       if (props.createOption.tableInstance) {
@@ -123,10 +122,27 @@ const Form = defineComponent({
 
     const instance = getCurrentInstance();
 
+    function setData(
+      data: Record<string, any>,
+      clearType: "all" | "default" | "never" = "default"
+    ) {
+      Object.assign(props.createOption.data.value, data);
+
+      const keys: string[] = Object.keys(data);
+
+      if (clearType === "all") {
+        elFormRef.value.clearValidate();
+      } else if (clearType === "default") {
+        elFormRef.value.clearValidate(keys);
+      }
+    }
+
     onMounted(() => {
       dialog?.setFormInstance && dialog?.setFormInstance(instance);
 
       props.createOption.onReady && props.createOption.onReady();
+
+      props.createOption.setData = setData;
     });
 
     const { createOption } = props;
@@ -206,6 +222,7 @@ const Form = defineComponent({
         });
       });
     }
+
     props.createOption.validate = validate;
 
     expose({

@@ -15,6 +15,7 @@ export const setting = {
       Rate: "change",
       Switch: "change",
       Upload: "change",
+      DateRangePicker: "change",
 
       default: "change",
     },
@@ -27,6 +28,7 @@ export const setting = {
       Rate: "请选择",
       Switch: "请选择",
       Upload: "请选择",
+      DateRangePicker: "请选择",
 
       default: "请选择",
     },

@@ -21,7 +21,7 @@ const isArray = Array.isArray;
 export { createRules };
 export type FormType<T> = FormGroupType<T> | FormSettingType<T>;
 
-type Model = string | string[];
+export type Model = string | string[];
 
 type FormGroupType<T> = {
   children: FormSettingType<T>[];

@@ -4,7 +4,7 @@ export interface ResponseData<T> {
   data: T;
   [key: string]: any;
 }
-export type Code = 200 | 300 | 404 | 500;
+export type Code = 0 | 200 | 300 | 404 | 500;
 
 type Mock = ResponseData<any> | MockFn;
 

@@ -32,11 +32,12 @@ import Container from "./components/Container/index.vue";
 //   height: 100vh;
 // }
 .el-header {
-  background-color: #409eff;
+  background-color: #505cab;
   //   color: #333;
   text-align: center;
   line-height: 60px;
   height: 60px;
+  padding: 0;
 }
 
 .el-aside {
