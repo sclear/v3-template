@@ -4,8 +4,6 @@ import Table, { CreateTable } from "@/components/Table";
 import { useServer } from "./hook/useServer";
 import Trigger from "@/components/Trigger";
 
-import "uno.css";
-
-Form.Trigger = Trigger;
+// import "uno.css";
 
 export { Form, CreateForm, Dialog, Table, CreateTable, useServer, Trigger };

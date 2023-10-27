@@ -1,4 +1,7 @@
 import { createApi, createApiModule } from "@/hook/useServer/lib/store";
+import { dictionaries } from "./dictionaries";
+import { game } from "./game";
+import { login } from "./login";
 
 export const api = createApiModule({
   user: {
@@ -90,7 +93,7 @@ const user = createApiModule({
       return {
         code: data.num % 2 === 1 ? 200 : 500,
         message: "ok",
-        data: false,
+        data: [],
       };
     },
   },
@@ -125,4 +128,7 @@ const user = createApiModule({
 export default createApi({
   ...api,
   user,
+  dictionaries,
+  game,
+  login,
 });

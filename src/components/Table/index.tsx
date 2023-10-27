@@ -1,4 +1,12 @@
-import { computed, defineComponent, reactive, ref, unref, provide } from "vue";
+import {
+  computed,
+  defineComponent,
+  reactive,
+  ref,
+  unref,
+  provide,
+  ComponentInternalInstance,
+} from "vue";
 import type { PropType, Ref } from "vue";
 import "./index.less";
 import { ElTable, ElPagination, ElTableColumn } from "element-plus";
@@ -118,6 +126,7 @@ function deepResolver(
                 value={value}
                 data={slots.row}
                 index={slots.$index}
+                action={prop.action}
                 args={{
                   index,
                 }}
@@ -165,6 +174,7 @@ interface Column {
   children?: Column[];
   vIf?: (() => boolean) | boolean | Ref<boolean>;
   type?: keyof typeof Components;
+  action?: any[];
   render?: (
     text: any,
     row: any,
@@ -247,15 +257,33 @@ export default defineComponent({
       run();
     };
 
+    props.createOption.run = run;
+
     props.createOption.autoRun && run();
+
+    let dialogInstance = ref<any | null>(null);
+    // provide
+    provide("GetDialogInstance", {
+      setDialogInstance(instance: ComponentInternalInstance | null) {
+        dialogInstance.value = instance;
+      },
+    });
 
     // provide
     provide("formTable", {
       run: search,
+      // trigger
+      open(option = {}) {
+        dialogInstance.value.open(option);
+      },
     });
 
     expose({
       run: search,
+      // open
+      open(option = {}) {
+        dialogInstance.value.open(option);
+      },
     });
 
     return () => (

@@ -7,7 +7,6 @@ export default defineComponent({
   emits: ["update:modelValue", "change"],
   setup(props, { emit }) {
     const { placeholder, label, model } = props;
-    console.log(props.dataSource);
     const prop = props.customProps || {};
     return () => (
       <>
@@ -24,7 +23,7 @@ export default defineComponent({
           modelValue={props.modelValue}
           disabled={unref(props.disabled)}
         >
-          {unref(props.dataSource).map((item: any) => {
+          {unref(props.dataSource as []).map((item: any) => {
             return (
               <ElOption
                 key={item.value}

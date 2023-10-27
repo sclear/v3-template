@@ -4,7 +4,7 @@ import { activeRoutes } from "@/router/modules/active.router";
 import router from "@/router";
 import { listToTree } from "@/tools/util";
 import { reactive, toRefs } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 interface MenuItem {
   path: string;
@@ -27,22 +27,62 @@ interface SettingState {
 }
 
 const defaultTab = {
-  path: "/homepage",
+  path: "/workplace",
   query: {},
-  title: "主页",
-  name: "/homepage",
+  title: "工作台",
+  name: "/workplace",
 };
 
 const menuJson = [
   {
-    title: "演示列表",
-    icon: "",
+    title: "工作台",
+    icon: "icon-gongzuotai",
+    path: "/workplace",
+    name: "/workplace",
+    parentId: 0,
+    id: "gzt-0",
+  },
+  {
+    title: "表单页",
+    icon: "icon-biaodanzujian-biaoge",
     path: "",
     parentId: 0,
     id: 1,
   },
   {
-    title: "Form",
+    title: "基础表单",
+    icon: "",
+    path: "/basic-form",
+    name: "/basic-form",
+    parentId: 1,
+    id: "1-0",
+  },
+  {
+    title: "高级表单",
+    icon: "",
+    path: "/advanced-form",
+    name: "/advanced-form",
+    parentId: 1,
+    id: "1-0",
+  },
+  {
+    title: "栅格表单",
+    icon: "",
+    path: "/row",
+    name: "/row",
+    parentId: 1,
+    id: "1-2",
+  },
+  // {
+  //   title: "高级表单",
+  //   icon: "",
+  //   path: "/advanced-form",
+  //   name: "/advanced-form",
+  //   parentId: 1,
+  //   id: "1-1",
+  // },
+  {
+    title: "功能汇总演示",
     icon: "",
     path: "/form",
     name: "/form",
@@ -51,27 +91,57 @@ const menuJson = [
   },
   {
     title: "Dialog",
+    icon: "icon-danchuang1",
+    path: "",
+    parentId: 0,
+    id: 6,
+  },
+  {
+    title: "Dialog",
     icon: "",
     path: "/dialog",
     name: "/dialog",
-    parentId: 1,
-    id: 3,
+    parentId: 6,
+    id: "6-0",
   },
   {
-    title: "Table",
-    icon: "",
-    path: "/table",
-    name: "/table",
-    parentId: 1,
-    id: 4,
-  },
-  {
-    title: "组合演示",
-    icon: "",
-    path: "/homepage",
-    name: "/homepage",
+    title: "列表页",
+    icon: "icon-liebiao",
+    path: "",
     parentId: 0,
     id: 5,
+  },
+  {
+    title: "查询列表",
+    icon: "",
+    path: "/table-list",
+    name: "/table-list",
+    parentId: 5,
+    id: "5-0",
+  },
+  {
+    title: "高级列表",
+    icon: "",
+    path: "/advanced-table-list",
+    name: "/advanced-table-list",
+    parentId: 5,
+    id: "5-1",
+  },
+  {
+    title: "个人中心",
+    icon: "icon-gerenzhongxin",
+    path: "/center",
+    name: "/center",
+    parentId: 0,
+    id: "9",
+  },
+  {
+    title: "404",
+    icon: "icon-icon-404",
+    path: "/404",
+    name: "/404",
+    parentId: 0,
+    id: "404",
   },
 ];
 
@@ -97,6 +167,11 @@ export const useSetting = defineStore(
     // tab新增
     function addTab(tab: Tab) {
       console.log(tab);
+      console.log(tab);
+      console.log(tab);
+      console.log(tab);
+      console.log(tab);
+      if (tab?.path === "/404") return;
       const isRepetition = state.tabs.some((item: Tab) => {
         if (item.path === tab.path) {
           state.currentTab = tab.name;
@@ -110,6 +185,8 @@ export const useSetting = defineStore(
     }
 
     // tab删除
+    const route = useRoute();
+
     function removeTab(targetName: string) {
       // 检测禁删最后一项
       if (state.tabs.length === 1) return;
@@ -121,7 +198,8 @@ export const useSetting = defineStore(
       state.tabs = state.tabs.filter((tab: Tab, index: number) => {
         if (tab.path === targetName) {
           const nextTab = tabs[index + 1] || tabs[index - 1];
-          if (nextTab) {
+
+          if (nextTab && state.currentTab === targetName) {
             activeName = nextTab.name;
             router.push({
               path: nextTab.path,
@@ -154,7 +232,9 @@ export const useSetting = defineStore(
           })),
           0
         );
-        resolve(wrapRoutes([...activeRoutes, ...registerRoutes]));
+        setTimeout(() => {
+          resolve(wrapRoutes([...activeRoutes, ...registerRoutes]));
+        }, 500);
       });
     }
 
@@ -188,7 +268,7 @@ export const useSetting = defineStore(
 
     function initRoute() {
       const route = useRoute();
-      state.currentTab = route.path || "/homepage";
+      state.currentTab = route.path || "/workplace";
     }
 
     return {

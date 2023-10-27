@@ -2,13 +2,14 @@ import { RouteRecordRaw } from "vue-router";
 
 export const asyncRoutes: RouteRecordRaw[] = [
   {
-    path: "/homepage",
+    path: "/workplace",
     meta: {
-      title: "主页",
+      title: "工作台",
       permission: false,
     },
-    component: () => import("@/views/homepage/index.vue"),
+    component: () => import("@/views/workplace/index.vue"),
   },
+
   {
     path: "/test",
     meta: {
@@ -20,10 +21,34 @@ export const asyncRoutes: RouteRecordRaw[] = [
   {
     path: "/form",
     meta: {
-      title: "Form",
+      title: "功能汇总演示",
       permission: false,
     },
     component: () => import("@/views/form/index.vue"),
+  },
+  {
+    path: "/basic-form",
+    meta: {
+      title: "基础表单",
+      permission: false,
+    },
+    component: () => import("@/views/formView/basicForm/index.vue"),
+  },
+  {
+    path: "/row",
+    meta: {
+      title: "栅格表单",
+      permission: false,
+    },
+    component: () => import("@/views/formView/row/index.vue"),
+  },
+  {
+    path: "/advanced-form",
+    meta: {
+      title: "高级表单",
+      permission: false,
+    },
+    component: () => import("@/views/formView/advancedForm/index.vue"),
   },
   {
     path: "/dialog",
@@ -33,13 +58,37 @@ export const asyncRoutes: RouteRecordRaw[] = [
     },
     component: () => import("@/views/dialog/index.vue"),
   },
+  // {
+  //   path: "/table",
+  //   meta: {
+  //     title: "Table",
+  //     permission: false,
+  //   },
+  //   component: () => import("@/views/table/index.vue"),
+  // },
   {
-    path: "/table",
+    path: "/table-list",
     meta: {
-      title: "Table",
+      title: "查询列表",
       permission: false,
     },
-    component: () => import("@/views/table/index.vue"),
+    component: () => import("@/views/table/table/index.vue"),
+  },
+  {
+    path: "/advanced-table-list",
+    meta: {
+      title: "高级列表",
+      permission: false,
+    },
+    component: () => import("@/views/table/advancedTable/index.vue"),
+  },
+  {
+    path: "/center",
+    meta: {
+      title: "个人中心",
+      permission: false,
+    },
+    component: () => import("@/views/center/index.vue"),
   },
 ];
 

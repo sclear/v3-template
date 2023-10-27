@@ -5,7 +5,8 @@ export const propsType = {
     type: [String, Array],
   },
   data: {
-    type: [String, Number, Array, Object],
+    type: Object,
+    default: () => ({}),
   },
   index: {
     type: Number,
@@ -14,5 +15,8 @@ export const propsType = {
     type: Object as unknown as PropType<{
       index: number;
     }>,
+  },
+  action: {
+    type: [Array],
   },
 };

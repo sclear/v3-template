@@ -1,6 +1,11 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import { useSetting } from "@/store/setting";
 import { activeRoutes } from "./modules/active.router";
+import NProgress from "nprogress";
+NProgress.configure({
+  easing: "ease",
+  speed: 2000,
+});
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -26,6 +31,7 @@ let isFirst = true;
 const whiteList = ["/", "/login"];
 
 router.beforeEach(async (to, from, next) => {
+  NProgress.start();
   // 白名单
   if (whiteList.includes(to.path)) {
     return next();
@@ -35,7 +41,7 @@ router.beforeEach(async (to, from, next) => {
 
   if (setting.token) {
     // 首次进入 无路由权限
-    if (isFirst) {
+    if (isFirst || !setting.flatMenu.length) {
       isFirst = false;
       const routes = await setting.registerRoute();
       router.addRoute(routes);
@@ -58,5 +64,9 @@ router.beforeEach(async (to, from, next) => {
   }
 
   next({ path: "/" });
+});
+
+router.afterEach(() => {
+  NProgress.done();
 });
 export default router;

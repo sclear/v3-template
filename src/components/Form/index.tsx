@@ -92,13 +92,7 @@ const Form = defineComponent({
 
     props.createOption.instance = elFormRef;
 
-    function reset() {
-      // 初始化data
-      props.createOption.data.value = JSON.parse(
-        JSON.stringify(props.createOption.cache)
-      );
-      elFormRef.value.clearValidate();
-
+    function searchTableList() {
       // has tableInstance reset pagination
       if (props.createOption.tableInstance) {
         props.createOption.tableInstance?.value?.run &&
@@ -106,6 +100,15 @@ const Form = defineComponent({
         props.createOption.tableInstance?.run &&
           props.createOption.tableInstance?.run(true);
       }
+    }
+    function reset() {
+      // 初始化data
+      props.createOption.data.value = JSON.parse(
+        JSON.stringify(props.createOption.cache)
+      );
+      elFormRef.value.clearValidate();
+
+      searchTableList();
     }
     props.createOption.reset = reset;
 
@@ -231,11 +234,19 @@ const Form = defineComponent({
       resetFields(e: any) {
         elFormRef.value.resetFields(e);
       },
+      setData,
     });
 
     provide("TriggerFunctional", {
       reset,
       validate,
+      searchTableList,
+      create(option = {}) {
+        props.createOption.tableInstance?.open &&
+          props.createOption.tableInstance?.open(option);
+        props.createOption.tableInstance?.value?.open &&
+          props.createOption.tableInstance?.value?.open(option);
+      },
     });
 
     let formRules =

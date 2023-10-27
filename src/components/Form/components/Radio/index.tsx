@@ -24,7 +24,7 @@ export default defineComponent({
           }}
           {...(props.customProps || {})}
         >
-          {unref(props.dataSource).map((item: any) => {
+          {unref(props.dataSource as []).map((item: any) => {
             return <ElRadio label={item.value}>{item.label}</ElRadio>;
           })}
         </ElRadioGroup>

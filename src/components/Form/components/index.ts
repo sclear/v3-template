@@ -6,6 +6,10 @@ import CheckBox from "./CheckBox";
 import Radio from "./Radio";
 import Rate from "./Rate";
 import Switch from "./Switch";
+import InputNumber from "./InputNumber";
+import Dict from "./Dict";
+import Text from "./Text";
+import Action from "./Action";
 
 export const Components = {
   Input,
@@ -16,4 +20,8 @@ export const Components = {
   Rate,
   Switch,
   DateRangePicker,
+  InputNumber,
+  Dict,
+  Text,
+  Action,
 };

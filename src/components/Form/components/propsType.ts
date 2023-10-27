@@ -16,7 +16,9 @@ export const propsType = {
     default: "",
   },
   dataSource: {
-    type: [Array, Object] as unknown as PropType<unknown[] | Ref<unknown[]>>,
+    type: [Array, Object, String] as unknown as PropType<
+      unknown[] | Ref<unknown[]> | string
+    >,
     default: [],
   },
   disabled: {
@@ -28,5 +30,8 @@ export const propsType = {
   },
   defaultValue: {
     type: [String, Number, Array],
+  },
+  data: {
+    type: [Object, Array],
   },
 };

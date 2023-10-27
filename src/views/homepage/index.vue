@@ -5,7 +5,7 @@
       ref="tableRef"
       :createOption="tableOption"
       :search-params="searchForm.omitData"
-      class="mt-2"
+      class="mt-2 wh"
     >
       <Dialog :width="900" ref="dialogRef">
         <Form :createOption="dialogForm" />
@@ -20,7 +20,7 @@ import { ref, computed, onMounted } from "vue";
 import { ElButton, ElInput } from "element-plus";
 import Table, { CreateTable } from "./../../components/Table";
 import Dialog from "./../../components/Dialog";
-import { useServer, Form, CreateForm } from "@/entry";
+import { useServer, Form, CreateForm, Trigger } from "@/entry";
 
 const dialogRef = ref();
 const searchFormRef = ref();
@@ -91,13 +91,13 @@ const searchForm = CreateForm({
               新增
             </ElButton>
 
-            <Form.Trigger htmlType="submit" class="ml-12px">
+            <Trigger htmlType="submit" class="ml-12px">
               <ElButton type="success">查询</ElButton>
-            </Form.Trigger>
+            </Trigger>
 
-            <Form.Trigger htmlType="reset" class="ml-12px">
+            <Trigger htmlType="reset" class="ml-12px">
               <ElButton type="info">重置</ElButton>
-            </Form.Trigger>
+            </Trigger>
           </>
         );
       },

@@ -5,6 +5,7 @@ import {
   onMounted,
   provide,
   reactive,
+  inject,
   ref,
   ComponentInternalInstance,
   useSlots,
@@ -64,6 +65,18 @@ export default defineComponent({
     const slot = ctx.slots;
 
     let formInstance = ref<ComponentInternalInstance | null>(null);
+
+    const formDialog = computed(() => {
+      return dialogDisabled.value || props.disabled;
+    });
+
+    // provide
+    provide("renderDialog", {
+      setFormInstance(instance: any | null) {
+        formInstance.value = instance;
+      },
+      disabled: formDialog,
+    });
 
     onMounted(() => {
       const instance = getCurrentInstance();
@@ -160,34 +173,43 @@ export default defineComponent({
     type openOptions = {
       disabled?: boolean;
       title?: string;
+      data?: Object;
     };
+
+    function open(params: openOptions = {}) {
+      dialogTitle.value = params.title || "";
+      dialogDisabled.value = params.disabled || false;
+      visible.value = true;
+      if (params.data && formInstance?.value?.exposed) {
+        formInstance?.value?.exposed?.setData(params.data);
+      }
+    }
+    function close() {
+      props.cancel && props.cancel();
+      cancelCallReset();
+      visible.value = false;
+      buttonLoading.value = false;
+    }
 
     // exports
     ctx.expose({
-      open(params: openOptions = {}) {
-        dialogTitle.value = params.title || "";
-        dialogDisabled.value = params.disabled || false;
-        visible.value = true;
-      },
-      close() {
-        props.cancel && props.cancel();
-        cancelCallReset();
-        visible.value = false;
-        buttonLoading.value = false;
-      },
+      open,
+      close,
     });
 
-    const formDialog = computed(() => {
-      return dialogDisabled.value || props.disabled;
+    // 传递dialog instance 至 table
+    const setTable = inject<{
+      setDialogInstance?: (instance: any | null) => void;
+    }>("GetDialogInstance", {
+      // setDialogInstance()
     });
 
-    // provide
-    provide("renderDialog", {
-      setFormInstance(instance: ComponentInternalInstance | null) {
-        console.log(formInstance);
-        formInstance.value = instance;
-      },
-      disabled: formDialog,
+    onMounted(() => {
+      setTable.setDialogInstance &&
+        setTable.setDialogInstance({
+          open,
+          close,
+        });
     });
 
     // destroy-on-close={true}

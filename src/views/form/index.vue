@@ -1,28 +1,30 @@
 <template>
   <!-- <ElInput v-model="k"></ElInput> -->
-  <ElCard>
-    <template #header> basics </template>
-    <Form ref="searchFormRef" :createOption="searchForm" />
-  </ElCard>
-  <ElCard class="mt-2">
-    <template #header> vIf / vDisabled </template>
-    <Form ref="searchFormRefVIf" :createOption="searchFormVIf" />
-  </ElCard>
-  <ElCard class="mt-2">
-    <template #header> Render </template>
-    <Form ref="searchFormRefRender" :createOption="searchFormRender" />
-  </ElCard>
-  <ElCard class="mt-2">
-    <template #header> Render FormItem </template>
-    <Form
-      ref="searchFormRefRenderFormItem"
-      :createOption="searchFormRenderFormItem"
-    />
-  </ElCard>
-  <ElCard class="mt-2 mb-10">
-    <template #header> validate rules </template>
-    <Form ref="searchFormRefRule" :createOption="searchFormRule" />
-  </ElCard>
+  <div>
+    <ElCard>
+      <template #header> basics </template>
+      <Form ref="searchFormRef" :createOption="searchForm" />
+    </ElCard>
+    <ElCard class="mt-2">
+      <template #header> vIf / vDisabled </template>
+      <Form ref="searchFormRefVIf" :createOption="searchFormVIf" />
+    </ElCard>
+    <ElCard class="mt-2">
+      <template #header> Render </template>
+      <Form ref="searchFormRefRender" :createOption="searchFormRender" />
+    </ElCard>
+    <ElCard class="mt-2">
+      <template #header> Render FormItem </template>
+      <Form
+        ref="searchFormRefRenderFormItem"
+        :createOption="searchFormRenderFormItem"
+      />
+    </ElCard>
+    <ElCard class="mt-2 mb-10">
+      <template #header> validate rules </template>
+      <Form ref="searchFormRefRule" :createOption="searchFormRule" />
+    </ElCard>
+  </div>
 </template>
 
 <script lang="tsx" setup>

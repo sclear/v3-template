@@ -62,7 +62,7 @@ export type FormSettingType<T> = {
   labelWidth?: number;
   placeholder?: string;
   className?: string;
-  dataSource?: Ref<any[]> | any[];
+  dataSource?: Ref<any[]> | any[] | string;
   customProps?: object;
   vIf?: (args: { value: unknown; model: Model; data: RefValue<T> }) => boolean;
   vDisabled?: (args: {
@@ -231,7 +231,6 @@ function renderItem(
 
   // computed v-if
   const vif = computed(() => {
-    // console.log(item.vIf);
     if (
       (item.vIf &&
         // item.model &&
@@ -389,6 +388,28 @@ function renderItem(
   }
 
   const CustomComponent = Components[item.type];
+
+  const actionProp = {
+    ...prop,
+    data: props.data,
+  };
+
+  if (!item.model && item.type) {
+    return (
+      <>
+        <ElCol span={rowSpan} offset={rowOffset} {...wrapperCol}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: alignGroup[align],
+            }}
+          >
+            <CustomComponent {...actionProp} />
+          </div>
+        </ElCol>
+      </>
+    );
+  }
 
   if (!item.model) return "";
 

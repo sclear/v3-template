@@ -27,7 +27,8 @@ function renderMenuItems(menus?: MenuItem[]): Array<JSX.Element> | undefined {
                   return (
                     <>
                       <ElIcon>
-                        <Grid />
+                        {/* <Grid /> */}
+                        <i class={`iconfont text-20px ${item.icon}`}></i>
                       </ElIcon>{" "}
                       <span>{item.title}</span>
                     </>
@@ -43,9 +44,9 @@ function renderMenuItems(menus?: MenuItem[]): Array<JSX.Element> | undefined {
       return (
         <>
           <ElMenuItem index={item.path}>
-            {" "}
             <ElIcon>
-              <Document />
+              {/* <Document /> */}
+              <i class={`iconfont ${item.icon} text-20px`}></i>
             </ElIcon>{" "}
             <span>{item.title}</span>{" "}
           </ElMenuItem>

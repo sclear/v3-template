@@ -1,7 +1,7 @@
 <template>
-  <div class="page-container box-border relative">
+  <div class="page-container box-border relative overflow-x-hidden">
     <router-view v-slot="{ Component }">
-      <transition>
+      <transition name="slide">
         <component :is="Component" />
       </transition>
     </router-view>
@@ -14,6 +14,7 @@
   height: calc(100vh - 105px);
   overflow-y: auto;
   padding: 15px 15px 0 15px;
+  background-color: #f0f2f5;
 }
 
 // 透明度

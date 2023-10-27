@@ -1,7 +1,7 @@
 <template>
-  <div class="h-100vh w-full flex justify-center items-center">
-    <div class="w-105 pt-20">
-      <ElCard class="pt-2 pb-4 pl-2 pr-2">
+  <div class="login-page h-100vh w-full flex justify-end items-center">
+    <div class="w-105 pt-20 mr-50px">
+      <ElCard class="pt-10 pb-10 pl-2 pr-2">
         <Form ref="formRef" :createOption="createLoginForm"></Form>
       </ElCard>
     </div>
@@ -28,18 +28,20 @@ const createLoginForm = CreateForm({
     {
       align: "center",
       render() {
-        return <h3 class="text-center c-#61AFFF mb-5">Login</h3>;
+        return <h3 class="text-center c-primary mb-5">Login</h3>;
       },
     },
     {
       model: "user",
+      label: "User",
       type: "Input",
       placeholder: "admin",
     },
     {
       model: "pass",
+      label: "Password",
       type: "Input",
-      placeholder: "password",
+      placeholder: "123456",
     },
     {
       align: "center",
@@ -57,12 +59,21 @@ const createLoginForm = CreateForm({
       },
     },
   ],
+  customProps: {
+    "label-position": "top",
+  },
+  requestData() {
+    return {
+      successMessage: "登录成功",
+    };
+  },
   onSuccess() {
     setting.setToken("001");
     router.push({
-      path: "/homepage",
+      path: "/workplace",
     });
   },
+  api: "login.login",
   createRule(create) {
     return {
       user: create.must("请输入userName"),
@@ -72,3 +83,10 @@ const createLoginForm = CreateForm({
   labelWidth: 1,
 });
 </script>
+
+<style>
+.login-page {
+  background: url("@/assets/img/page.png") no-repeat;
+  background-size: 100% 100%;
+}
+</style>

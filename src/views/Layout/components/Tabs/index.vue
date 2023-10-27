@@ -1,20 +1,22 @@
 <template>
-  <el-tabs
-    :modelValue="route.path"
-    type="card"
-    class="demo-tabs"
-    closable
-    @tab-click="tabChange"
-    @tabRemove="setting.removeTab"
-  >
-    <el-tab-pane
-      v-for="item in setting.tabs"
-      :key="item.path"
-      :label="item.title"
-      :name="item.path"
+  <div class="flex justify-between items-center">
+    <el-tabs
+      :modelValue="route.path"
+      type="card"
+      class="demo-tabs"
+      closable
+      @tab-click="tabChange"
+      @tabRemove="setting.removeTab"
     >
-    </el-tab-pane>
-  </el-tabs>
+      <el-tab-pane
+        v-for="item in setting.tabs"
+        :key="item.path"
+        :label="item.title"
+        :name="item.path"
+      >
+      </el-tab-pane>
+    </el-tabs>
+  </div>
 </template>
 <script lang="ts" setup>
 import { ref, watch, computed } from "vue";
@@ -27,7 +29,8 @@ const setting = useSetting();
 
 function tabChange(pane: any) {
   const routeInfo = setting.tabs.find((item) => item.path === pane.props.name);
-
+  console.log(routeInfo);
+  console.log(route);
   if (routeInfo?.path === route.path) {
     return;
   }
