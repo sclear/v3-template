@@ -147,15 +147,15 @@ const tableOption = CreateTable({
     {
       prop: "item_id",
       label: "装备",
-      width: 100,
-      render(text) {
-        return (
-          <img
-            class="w-30px"
-            src={`//game.gtimg.cn/images/yxzj/img201606/itemimg/${text}.jpg`}
-          />
-        );
-      },
+      // width: 100,
+      // render(text) {
+      //   return (
+      //     <img
+      //       class="w-30px"
+      //       src={`//game.gtimg.cn/images/yxzj/img201606/itemimg/${text}.jpg`}
+      //     />
+      //   );
+      // },
     },
     {
       prop: "item_name",
@@ -187,8 +187,25 @@ const tableOption = CreateTable({
                 dialogRef.value.open({
                   title: "编辑装备",
                   disabled: false,
+                  data: {
+                    ...data,
+                  },
+                  action: [
+                    {
+                      function: "cancel",
+                    },
+                    {
+                      function: "confirm",
+                      type: "warning",
+                      label: "暂存",
+                      api: "game.testSave",
+                    },
+                    {
+                      function: "confirm",
+                      api: "game.confirm",
+                    },
+                  ],
                 });
-                dialogForm.data.value = { ...data };
               }}
             >
               编辑
@@ -200,8 +217,11 @@ const tableOption = CreateTable({
                 dialogRef.value.open({
                   disabled: true,
                   title: "详情",
+                  api: "test",
+                  data: {
+                    ...data,
+                  },
                 });
-                dialogForm.data.value = { ...data };
               }}
             >
               装备详情

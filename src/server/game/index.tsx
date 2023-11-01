@@ -36,4 +36,62 @@ export const game = createApiModule({
       };
     },
   },
+  test: {
+    url: "//mock",
+    method: "get",
+    Mock({ data }) {
+      return {
+        code: 200,
+        data: [],
+      };
+    },
+  },
+  testSave: {
+    url: "//mock",
+    method: "get",
+    Mock({ data }) {
+      console.log(data);
+      console.log("testSave");
+      return {
+        code: 200,
+        data: [],
+      };
+    },
+  },
+  createHero0: {
+    url: "//mock",
+    method: "get",
+    Mock({ data }) {
+      console.log(data);
+      console.log("createHero0");
+      return {
+        code: 200,
+        data: [],
+      };
+    },
+  },
+  createHero1: {
+    url: "//mock",
+    method: "get",
+    Mock({ data }) {
+      console.log(data);
+      console.log("createHero1");
+      return {
+        code: 200,
+        data: [],
+      };
+    },
+  },
+  confirm: {
+    url: "//mock",
+    method: "get",
+    Mock({ data }) {
+      console.log(data);
+      console.log("confirm");
+      return {
+        code: 200,
+        data: [],
+      };
+    },
+  },
 });

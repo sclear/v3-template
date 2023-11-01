@@ -9,7 +9,7 @@ const { getApiModule } = serverSetting;
 
 type InputApi = Parameters<typeof getApiModule>[0];
 
-type ResponseType = "json" | "blob";
+export type ResponseType = "json" | "blob";
 
 export type ApiType = InputApi;
 export interface UseServerConfig<Result, T, U extends string | object> {
@@ -25,10 +25,10 @@ export interface UseServerConfig<Result, T, U extends string | object> {
   deps?: any[];
   throttleTime?: number;
   debounceTime?: number;
+  responseType?: ResponseType;
   onError?: (err: any) => void;
   onSuccess?: (data: Result, response: ResponseData<T>) => void;
   beforeSetData?: (data: ResponseData<T>) => Result;
-  responseType?: ResponseType;
   beforeRequest?: (requestCondition: { data: U; urlParams: any }) => {
     responseType?: ResponseType;
     data?: any;
@@ -103,6 +103,27 @@ export function useServer<T = any, K = any, U extends object | string = any>(
     loading.value = true;
     const method = unref(configApi);
     const httpModule = getApiModule(method);
+
+    const formatCondition = {
+      data: unref(configData),
+      urlParams: unref(configUrlParams || undefined) || "",
+    };
+
+    config.beforeRequest =
+      config.beforeRequest || (httpModule.beforeRequest as any) || null;
+    config.beforeSetData =
+      config.beforeSetData || (httpModule.beforeSetData as any) || null;
+
+    // format request condition
+    if (config.beforeRequest) {
+      const { data, urlParams } = config.beforeRequest({
+        data: unref(configData),
+        urlParams: unref(configUrlParams || undefined) || "",
+      });
+      formatCondition.data && (formatCondition.data = data);
+      formatCondition.urlParams && (formatCondition.urlParams = urlParams);
+    }
+
     // Mock
     if (
       httpModule._Mock_ !== false &&
@@ -112,8 +133,8 @@ export function useServer<T = any, K = any, U extends object | string = any>(
       const response =
         typeof httpModule.Mock === "function"
           ? httpModule.Mock({
-              data: unref(config.data || null),
-              urlParams: unref(config.urlParams || null),
+              data: unref(formatCondition.data || null),
+              urlParams: unref(formatCondition.urlParams || null),
             })
           : httpModule.Mock;
       if (response.code === 200) {
@@ -137,22 +158,22 @@ export function useServer<T = any, K = any, U extends object | string = any>(
         }, 700);
       }
     } else {
-      const formatCondition = {
-        data: unref(configData),
-        urlParams: unref(configUrlParams || undefined) || "",
-      };
+      // const formatCondition = {
+      //   data: unref(configData),
+      //   urlParams: unref(configUrlParams || undefined) || "",
+      // };
 
-      // format request condition
-      if (config.beforeRequest) {
-        const { data, urlParams } = config.beforeRequest({
-          data: unref(configData),
-          urlParams: unref(configUrlParams || undefined) || "",
-        });
-        console.log(data, urlParams);
-        formatCondition.data && (formatCondition.data = data);
-        formatCondition.urlParams && (formatCondition.urlParams = urlParams);
-        console.log(data, urlParams);
-      }
+      // // format request condition
+      // if (config.beforeRequest) {
+      //   const { data, urlParams } = config.beforeRequest({
+      //     data: unref(configData),
+      //     urlParams: unref(configUrlParams || undefined) || "",
+      //   });
+      //   console.log(data, urlParams);
+      //   formatCondition.data && (formatCondition.data = data);
+      //   formatCondition.urlParams && (formatCondition.urlParams = urlParams);
+      //   console.log(data, urlParams);
+      // }
 
       request[httpModule.method](
         httpModule.url + formatCondition.urlParams,
@@ -176,7 +197,6 @@ export function useServer<T = any, K = any, U extends object | string = any>(
             config.onSuccess && config.onSuccess(data.value, res);
             config.successMessage &&
               ElMessage({ message: config.successMessage, type: "success" });
-            console.log(config.successMessage);
           } else {
             config.onError && config.onError(res);
             config.errorMessage &&

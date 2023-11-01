@@ -43,6 +43,7 @@ export default defineComponent({
               if (!args.run) {
                 Trigger.create({
                   title: args.title,
+                  api: args.api || null,
                 });
               }
             }}

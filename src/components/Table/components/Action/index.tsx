@@ -24,7 +24,6 @@ export default defineComponent({
           label: "编辑",
           ...option,
         };
-        console.log(props.data);
         return (
           <ElTag
             class="mx-2 cursor-pointer"
@@ -35,7 +34,8 @@ export default defineComponent({
               if (!args.run) {
                 Trigger.open({
                   title: args.title,
-                  data: props.data,
+                  data: { ...props.data },
+                  api: args.api,
                 });
               }
             }}

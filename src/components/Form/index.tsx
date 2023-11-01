@@ -23,7 +23,7 @@ export * from "./../FormItem";
 import { RuleItem } from "async-validator";
 import { ruleHelper } from "./rule.helper";
 import { omit } from "@/tools/util";
-import { watch } from "fs";
+import { ApiType } from "../../hook/useServer";
 
 export { createRules };
 
@@ -59,6 +59,9 @@ export function CreateForm<T = any, K extends keyof RefValue<T> = never>(
       clearType: "all" | "default" | "never" = "default"
     ) {
       console.warn("fast-warning: 请勿在Form初始化时调用Form setData");
+    },
+    setApi(api: ApiType) {
+      console.warn("fast-warning: 请勿在Form初始化时设置Api");
     },
   };
 }
@@ -106,7 +109,9 @@ const Form = defineComponent({
       props.createOption.data.value = JSON.parse(
         JSON.stringify(props.createOption.cache)
       );
-      elFormRef.value.clearValidate();
+      setTimeout(() => {
+        elFormRef.value.clearValidate();
+      }, 20);
 
       searchTableList();
     }
@@ -126,26 +131,35 @@ const Form = defineComponent({
     const instance = getCurrentInstance();
 
     function setData(
-      data: Record<string, any>,
+      data: Record<string, any> = {},
       clearType: "all" | "default" | "never" = "default"
     ) {
-      Object.assign(props.createOption.data.value, data);
-
+      console.log(data);
       const keys: string[] = Object.keys(data);
+
+      if (!keys.length) return;
+
+      Object.assign(props.createOption.data.value, data);
 
       if (clearType === "all") {
         elFormRef.value.clearValidate();
       } else if (clearType === "default") {
+        console.log(keys);
         elFormRef.value.clearValidate(keys);
       }
+    }
+
+    function setApi(api: ApiType) {
+      props.createOption.api = api;
     }
 
     onMounted(() => {
       dialog?.setFormInstance && dialog?.setFormInstance(instance);
 
-      props.createOption.onReady && props.createOption.onReady();
-
       props.createOption.setData = setData;
+      props.createOption.setApi = setApi;
+
+      props.createOption.onReady && props.createOption.onReady();
     });
 
     const { createOption } = props;
@@ -235,6 +249,7 @@ const Form = defineComponent({
         elFormRef.value.resetFields(e);
       },
       setData,
+      setApi,
     });
 
     provide("TriggerFunctional", {

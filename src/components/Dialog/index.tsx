@@ -9,12 +9,31 @@ import {
   ref,
   ComponentInternalInstance,
   useSlots,
+  unref,
 } from "vue";
 import type { PropType } from "vue";
 import { ElDialog, ElButton, ElIcon } from "element-plus";
 import { Close } from "@element-plus/icons-vue";
 import "./index.less";
 import { setting } from "@/tools/setting/setting";
+import { omit } from "@/tools/util";
+import { ApiType } from "@/hook/useServer";
+
+export type DialogOpenArgs = {
+  disabled?: boolean;
+  title?: string;
+  data?: Object;
+  api?: ApiType;
+  action?: Action[];
+};
+
+type Action = {
+  label?: string;
+  function?: string;
+  type?: string;
+  api?: string;
+  props?: Object;
+};
 
 export default defineComponent({
   props: {
@@ -83,10 +102,11 @@ export default defineComponent({
     });
 
     // close callback
-    function closeModel() {
+    function closeModel(api?: string) {
       buttonLoading.value = true;
       // form联动
       if (formInstance.value && !props.freeze) {
+        if (api) formInstance.value?.exposed?.setApi(api);
         formInstance.value?.exposed?.validate &&
           formInstance.value?.exposed?.validate((isClose?: boolean) => {
             if (isClose || isClose === undefined) {
@@ -148,7 +168,7 @@ export default defineComponent({
         }
         return (
           <>
-            <ElButton
+            {/* <ElButton
               onClick={() => {
                 props.cancel && props.cancel();
                 cancelCallReset();
@@ -164,25 +184,101 @@ export default defineComponent({
               loading={buttonLoading.value}
             >
               {props.confirmText || setting.dialog.confirmText || "确定"}
-            </ElButton>
+            </ElButton> */}
+            {action.value.map((vNode) => {
+              return vNode();
+              // return <vNode loading={unref(buttonLoading)} />;
+            })}
           </>
         );
       },
     };
 
-    type openOptions = {
-      disabled?: boolean;
-      title?: string;
-      data?: Object;
+    const currentClickLabel = ref("");
+
+    const handleList = {
+      cancel: (handleProps: object, label?: string) => {
+        return () => (
+          <ElButton
+            {...handleProps}
+            onClick={() => {
+              props.cancel && props.cancel();
+              cancelCallReset();
+              visible.value = false;
+              buttonLoading.value = false;
+            }}
+          >
+            {label || props.cancelText || setting.dialog.cancelText || "取消"}
+          </ElButton>
+        );
+      },
+      confirm: (handleProps: object, label?: string, api?: string) => {
+        return () => (
+          <ElButton
+            type="primary"
+            {...handleProps}
+            onClick={() => {
+              closeModel(api);
+              currentClickLabel.value = label || "确认";
+            }}
+            loading={
+              unref(buttonLoading) &&
+              (label ||
+                props.confirmText ||
+                setting.dialog.confirmText ||
+                "确认") === currentClickLabel.value
+            }
+          >
+            {label || props.confirmText || setting.dialog.confirmText || "确认"}
+          </ElButton>
+        );
+      },
     };
 
-    function open(params: openOptions = {}) {
+    const action = ref<any[]>([]);
+
+    const defaultAction: Action[] = [
+      {
+        label: "取消",
+        function: "cancel",
+        type: "default",
+      },
+      {
+        label: "确定",
+        function: "confirm",
+        type: "primary",
+      },
+    ];
+
+    function open(params: DialogOpenArgs = {}) {
       dialogTitle.value = params.title || "";
       dialogDisabled.value = params.disabled || false;
       visible.value = true;
-      if (params.data && formInstance?.value?.exposed) {
-        formInstance?.value?.exposed?.setData(params.data);
-      }
+
+      action.value = (params.action || defaultAction).map((item: Action) => {
+        if (item.function === "cancel") {
+          return handleList.cancel(
+            omit(item, ["function", "label"]),
+            item.label
+          );
+        }
+        if (item.function === "confirm") {
+          return handleList.confirm(
+            omit(item, ["function", "label", "api"]),
+            item.label,
+            item.api
+          );
+        }
+      });
+      // 防止首次Form示例未生成
+      setTimeout(() => {
+        if (params.data && formInstance?.value?.exposed) {
+          formInstance?.value?.exposed?.setData(params.data);
+          if (params.api) {
+            formInstance?.value?.exposed?.setApi(params.api);
+          }
+        }
+      }, 50);
     }
     function close() {
       props.cancel && props.cancel();

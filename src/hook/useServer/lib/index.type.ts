@@ -1,3 +1,5 @@
+import { ResponseType } from "../index";
+
 export interface ResponseData<T> {
   code: Code;
   message?: string;
@@ -22,6 +24,12 @@ export type ApiArgs = {
   url: string;
   Mock?: Mock;
   _Mock_?: boolean;
+  beforeSetData?: (data: ResponseData<any>) => any;
+  beforeRequest?: (requestCondition: { data: any; urlParams: any }) => {
+    responseType?: ResponseType;
+    data?: any;
+    urlParams?: string;
+  };
 };
 
 type MockFn = (args: { data: any; urlParams: any }) => ResponseData<any>;
@@ -31,6 +39,12 @@ export type ApiResult = {
   url: string;
   Mock?: Mock;
   _Mock_?: boolean;
+  beforeSetData?: (data: ResponseData<any>) => any;
+  beforeRequest?: (requestCondition: { data: any; urlParams: any }) => {
+    responseType?: ResponseType;
+    data?: any;
+    urlParams?: string;
+  };
 };
 
 type TupleAddStrPath<

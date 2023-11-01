@@ -14,6 +14,7 @@ import { omit } from "../../tools/util";
 import { useServer, ApiType, UseServerConfig } from "../../hook/useServer";
 import { setting } from "@/tools/setting/setting";
 import { Components } from "./components";
+import type { DialogOpenArgs } from "@/components/Dialog";
 
 type UseServerProps = Pick<
   UseServerConfig<any, any, any>,
@@ -65,6 +66,9 @@ export function CreateTable(option: CreateTable) {
     ...option,
     run() {
       console.warn("fast-warning: 请勿在Table初始化时调用Table run");
+    },
+    open(option: DialogOpenArgs, dialogIdx?: number) {
+      console.warn("fast-warning: 请勿在Table初始化时调用Table open");
     },
   };
 }
@@ -261,29 +265,36 @@ export default defineComponent({
 
     props.createOption.autoRun && run();
 
-    let dialogInstance = ref<any | null>(null);
+    // let dialogInstance = ref<any | null>(null);
+    let dialogInstanceList = ref<any[]>([]);
     // provide
     provide("GetDialogInstance", {
       setDialogInstance(instance: ComponentInternalInstance | null) {
-        dialogInstance.value = instance;
+        // dialogInstance.value = instance;
+        dialogInstanceList.value.push(instance);
+
+        // console.log("instance");
+        // console.log(instance);
       },
     });
+
+    function open(option: DialogOpenArgs, dialogIdx: number = 0) {
+      dialogInstanceList.value[dialogIdx].open(option);
+    }
+
+    props.createOption.open = open;
 
     // provide
     provide("formTable", {
       run: search,
       // trigger
-      open(option = {}) {
-        dialogInstance.value.open(option);
-      },
+      open,
     });
 
     expose({
       run: search,
       // open
-      open(option = {}) {
-        dialogInstance.value.open(option);
-      },
+      open,
     });
 
     return () => (

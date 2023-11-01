@@ -31,6 +31,7 @@ import {
 } from "@/entry";
 
 const dialogRef = ref();
+const dialogRef1 = ref();
 const tableRef = ref();
 
 const searchForm = CreateForm({
@@ -58,11 +59,9 @@ const searchForm = CreateForm({
       row: [24],
       align: "right",
       dataSource: [
-        "create",
         {
-          render() {
-            return <ElButton type="danger">测试</ElButton>;
-          },
+          api: "game.test",
+          type: "create",
         },
         "reset",
         "search",
@@ -81,7 +80,7 @@ const dialogForm = CreateForm({
   form: [
     {
       type: "Input",
-      label: "姓名",
+      label: "姓名0",
       model: "cname",
     },
     {
@@ -101,7 +100,7 @@ const dialogForm = CreateForm({
       model: "skin_name",
     },
   ],
-  api: "game.createHero",
+  api: "game.createHero0",
   labelWidth: 120,
   data: ref({
     cname: "",
@@ -131,14 +130,14 @@ const tableOption = CreateTable({
       prop: "ename",
       label: "头像",
       width: 100,
-      render(text) {
-        return (
-          <img
-            class="w-30px"
-            src={`//game.gtimg.cn/images/yxzj/img201606/heroimg/${text}/${text}.jpg`}
-          />
-        );
-      },
+      // render(text) {
+      //   return (
+      //     // <img
+      //     //   class="w-30px"
+      //     //   src={`//game.gtimg.cn/images/yxzj/img201606/heroimg/${text}/${text}.jpg`}
+      //     // />
+      //   );
+      // },
     },
     {
       prop: "cname",
@@ -167,7 +166,19 @@ const tableOption = CreateTable({
     {
       label: "操作",
       type: "Action",
-      action: ["remove", "edit", "view"],
+      action: [
+        {
+          type: "edit",
+          api: "game.test",
+        },
+        {
+          type: "view",
+        },
+        {
+          type: "remove",
+          api: "game.del",
+        },
+      ],
     },
   ],
 });

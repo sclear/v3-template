@@ -54,10 +54,10 @@
 
       <ElDropdown @command="userhandle">
         <div class="flex items-center">
-          <img
+          <!-- <img
             class="rd-50% w-40px cursor-pointer"
             src="https://game.gtimg.cn/images/yxzj/img201606/heroimg/523/523.jpg"
-          />
+          /> -->
           <div class="c-white ml-2">西施</div>
         </div>
         <template #dropdown>
