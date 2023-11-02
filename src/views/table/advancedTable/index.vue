@@ -147,15 +147,15 @@ const tableOption = CreateTable({
     {
       prop: "item_id",
       label: "装备",
-      // width: 100,
-      // render(text) {
-      //   return (
-      //     <img
-      //       class="w-30px"
-      //       src={`//game.gtimg.cn/images/yxzj/img201606/itemimg/${text}.jpg`}
-      //     />
-      //   );
-      // },
+      width: 100,
+      render(text) {
+        return (
+          <img
+            class="w-30px"
+            src={`//game.gtimg.cn/images/yxzj/img201606/itemimg/${text}.jpg`}
+          />
+        );
+      },
     },
     {
       prop: "item_name",

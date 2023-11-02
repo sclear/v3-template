@@ -130,14 +130,14 @@ const tableOption = CreateTable({
       prop: "ename",
       label: "头像",
       width: 100,
-      // render(text) {
-      //   return (
-      //     // <img
-      //     //   class="w-30px"
-      //     //   src={`//game.gtimg.cn/images/yxzj/img201606/heroimg/${text}/${text}.jpg`}
-      //     // />
-      //   );
-      // },
+      render(text) {
+        return (
+          <img
+            class="w-30px"
+            src={`//game.gtimg.cn/images/yxzj/img201606/heroimg/${text}/${text}.jpg`}
+          />
+        );
+      },
     },
     {
       prop: "cname",
