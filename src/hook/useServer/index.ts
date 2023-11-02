@@ -4,6 +4,7 @@ import { ResponseData, Code, IfAny } from "./lib/index.type";
 import serverSetting from "./../../server/index";
 import { ElMessage } from "element-plus";
 import { useDebounceFn, useThrottleFn } from "@vueuse/core";
+import { setting } from "@/tools/setting/setting";
 
 const { getApiModule } = serverSetting;
 
@@ -137,7 +138,8 @@ export function useServer<T = any, K = any, U extends object | string = any>(
               urlParams: unref(formatCondition.urlParams || null),
             })
           : httpModule.Mock;
-      if (response.code === 200) {
+
+      if (setting.request.code.success.includes(response.code)) {
         setTimeout(() => {
           data.value = config.beforeSetData
             ? config.beforeSetData(response)
@@ -150,31 +152,17 @@ export function useServer<T = any, K = any, U extends object | string = any>(
         }, 700);
       } else {
         setTimeout(() => {
+          const err =
+            setting.request.code.error[
+              response.code as keyof typeof setting.request.code.error
+            ];
           config.onError && config.onError(response);
-          config.errorMessage &&
-            ElMessage({ message: config.errorMessage, type: "error" });
+          ElMessage({ message: config.errorMessage || err, type: "error" });
           loading.value = false;
           config.end && config.end();
         }, 700);
       }
     } else {
-      // const formatCondition = {
-      //   data: unref(configData),
-      //   urlParams: unref(configUrlParams || undefined) || "",
-      // };
-
-      // // format request condition
-      // if (config.beforeRequest) {
-      //   const { data, urlParams } = config.beforeRequest({
-      //     data: unref(configData),
-      //     urlParams: unref(configUrlParams || undefined) || "",
-      //   });
-      //   console.log(data, urlParams);
-      //   formatCondition.data && (formatCondition.data = data);
-      //   formatCondition.urlParams && (formatCondition.urlParams = urlParams);
-      //   console.log(data, urlParams);
-      // }
-
       request[httpModule.method](
         httpModule.url + formatCondition.urlParams,
         ["get", "delete"].includes(httpModule.method)
@@ -190,7 +178,7 @@ export function useServer<T = any, K = any, U extends object | string = any>(
         }
       )
         .then((res) => {
-          if (res.code === 200) {
+          if (setting.request.code.success.includes(res.code)) {
             data.value = config.beforeSetData
               ? config.beforeSetData(res)
               : res.data;
@@ -198,9 +186,12 @@ export function useServer<T = any, K = any, U extends object | string = any>(
             config.successMessage &&
               ElMessage({ message: config.successMessage, type: "success" });
           } else {
+            const err =
+              setting.request.code.error[
+                res.code as keyof typeof setting.request.code.error
+              ];
             config.onError && config.onError(res);
-            config.errorMessage &&
-              ElMessage({ message: config.errorMessage, type: "error" });
+            ElMessage({ message: config.errorMessage || err, type: "error" });
           }
         })
         .catch((err) => {

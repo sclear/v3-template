@@ -121,12 +121,12 @@ const Form = defineComponent({
     const dialog = inject<{
       setFormInstance?: (instance: ComponentInternalInstance | null) => void;
       disabled?: ComputedRef<boolean>;
-    }>("renderDialog", {});
+    }>("DialogProvider", {});
 
     // table
     const tableRun = inject<{
       run?: () => void;
-    }>("formTable", {});
+    }>("TableProvider", {});
 
     const instance = getCurrentInstance();
 
@@ -252,7 +252,7 @@ const Form = defineComponent({
       setApi,
     });
 
-    provide("TriggerFunctional", {
+    provide("TriggerFormProvider", {
       reset,
       validate,
       searchTableList,

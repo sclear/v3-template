@@ -29,10 +29,11 @@ export type DialogOpenArgs = {
 
 type Action = {
   label?: string;
-  function?: string;
-  type?: string;
-  api?: string;
-  props?: Object;
+  function?: "confirm" | "cancel";
+  type?: "default" | "danger" | "warning" | "info" | "primary" | "success";
+  api?: ApiType;
+  customData?: Object;
+  render?: () => JSX.Element | JSX.Element[] | string;
 };
 
 export default defineComponent({
@@ -90,23 +91,20 @@ export default defineComponent({
     });
 
     // provide
-    provide("renderDialog", {
+    provide("DialogProvider", {
       setFormInstance(instance: any | null) {
         formInstance.value = instance;
       },
       disabled: formDialog,
     });
 
-    onMounted(() => {
-      const instance = getCurrentInstance();
-    });
-
     // close callback
-    function closeModel(api?: string) {
+    function closeModel(api?: string, confirmOption?: object) {
       buttonLoading.value = true;
       // form联动
       if (formInstance.value && !props.freeze) {
         if (api) formInstance.value?.exposed?.setApi(api);
+        if (confirmOption) formInstance.value?.exposed?.setData(confirmOption);
         formInstance.value?.exposed?.validate &&
           formInstance.value?.exposed?.validate((isClose?: boolean) => {
             if (isClose || isClose === undefined) {
@@ -168,26 +166,8 @@ export default defineComponent({
         }
         return (
           <>
-            {/* <ElButton
-              onClick={() => {
-                props.cancel && props.cancel();
-                cancelCallReset();
-                visible.value = false;
-                buttonLoading.value = false;
-              }}
-            >
-              {props.cancelText || setting.dialog.cancelText || "取消"}
-            </ElButton>
-            <ElButton
-              type="primary"
-              onClick={closeModel}
-              loading={buttonLoading.value}
-            >
-              {props.confirmText || setting.dialog.confirmText || "确定"}
-            </ElButton> */}
             {action.value.map((vNode) => {
               return vNode();
-              // return <vNode loading={unref(buttonLoading)} />;
             })}
           </>
         );
@@ -196,11 +176,18 @@ export default defineComponent({
 
     const currentClickLabel = ref("");
 
+    type ConfirmOption = {
+      label?: string;
+      api?: string;
+      customData?: Object;
+    };
+
     const handleList = {
       cancel: (handleProps: object, label?: string) => {
         return () => (
           <ElButton
             {...handleProps}
+            disabled={unref(buttonLoading)}
             onClick={() => {
               props.cancel && props.cancel();
               cancelCallReset();
@@ -212,24 +199,34 @@ export default defineComponent({
           </ElButton>
         );
       },
-      confirm: (handleProps: object, label?: string, api?: string) => {
+      confirm: (handleProps: object, confirmOption: ConfirmOption) => {
         return () => (
           <ElButton
             type="primary"
             {...handleProps}
             onClick={() => {
-              closeModel(api);
-              currentClickLabel.value = label || "确认";
+              closeModel(confirmOption.api, confirmOption.customData);
+              currentClickLabel.value = confirmOption.label || "确认";
             }}
+            disabled={
+              unref(buttonLoading) &&
+              (confirmOption.label ||
+                props.confirmText ||
+                setting.dialog.confirmText ||
+                "确认") !== currentClickLabel.value
+            }
             loading={
               unref(buttonLoading) &&
-              (label ||
+              (confirmOption.label ||
                 props.confirmText ||
                 setting.dialog.confirmText ||
                 "确认") === currentClickLabel.value
             }
           >
-            {label || props.confirmText || setting.dialog.confirmText || "确认"}
+            {confirmOption.label ||
+              props.confirmText ||
+              setting.dialog.confirmText ||
+              "确认"}
           </ElButton>
         );
       },
@@ -256,18 +253,24 @@ export default defineComponent({
       visible.value = true;
 
       action.value = (params.action || defaultAction).map((item: Action) => {
-        if (item.function === "cancel") {
+        if (item.function === "cancel" && !item.render) {
           return handleList.cancel(
             omit(item, ["function", "label"]),
             item.label
           );
         }
-        if (item.function === "confirm") {
+        if (item.function === "confirm" && !item.render) {
           return handleList.confirm(
-            omit(item, ["function", "label", "api"]),
-            item.label,
-            item.api
+            omit(item, ["function", "label", "api", "customData"]),
+            {
+              label: item.label,
+              api: item.api,
+              customData: item.customData,
+            }
           );
+        }
+        if (item.render) {
+          return item.render;
         }
       });
       // 防止首次Form示例未生成

@@ -15,7 +15,7 @@ export default defineComponent({
       validate: any;
       searchTableList: any;
       create: any;
-    }>("TriggerFunctional", {
+    }>("TriggerFormProvider", {
       reset() {
         new Error();
       },

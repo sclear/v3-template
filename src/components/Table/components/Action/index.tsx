@@ -10,7 +10,7 @@ export default defineComponent({
     const Trigger = inject<{
       run: any;
       open: any;
-    }>("formTable", {
+    }>("TableProvider", {
       run() {
         new Error();
       },

@@ -5,6 +5,24 @@ type Pagination = {
 };
 
 export const setting = {
+  request: {
+    code: {
+      success: [200],
+      error: {
+        0: "服未知错误",
+        300: "未知错误",
+        404: "未找到该资源",
+        500: "服务器错误",
+      },
+    },
+    status: {
+      success: [200],
+      error: {
+        500: "服务器错误",
+        404: "未找到改资源",
+      },
+    },
+  },
   form: {
     eventTrigger: {
       Select: "change",

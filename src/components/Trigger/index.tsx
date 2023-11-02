@@ -12,7 +12,7 @@ export default defineComponent({
     const Trigger = inject<{
       reset: any;
       validate: any;
-    }>("TriggerFunctional", {
+    }>("TriggerFormProvider", {
       reset() {
         new Error();
       },

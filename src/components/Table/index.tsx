@@ -265,16 +265,11 @@ export default defineComponent({
 
     props.createOption.autoRun && run();
 
-    // let dialogInstance = ref<any | null>(null);
     let dialogInstanceList = ref<any[]>([]);
     // provide
     provide("GetDialogInstance", {
       setDialogInstance(instance: ComponentInternalInstance | null) {
-        // dialogInstance.value = instance;
         dialogInstanceList.value.push(instance);
-
-        // console.log("instance");
-        // console.log(instance);
       },
     });
 
@@ -285,15 +280,13 @@ export default defineComponent({
     props.createOption.open = open;
 
     // provide
-    provide("formTable", {
+    provide("TableProvider", {
       run: search,
-      // trigger
       open,
     });
 
     expose({
       run: search,
-      // open
       open,
     });
 

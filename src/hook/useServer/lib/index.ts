@@ -1,6 +1,8 @@
 import axios from "axios";
 import { ResponseData } from "./index.type";
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import { setting } from "@/tools/setting/setting";
+import { ElMessage } from "element-plus";
 
 class Request {
   instance: AxiosInstance;
@@ -9,7 +11,7 @@ class Request {
   constructor(config: AxiosRequestConfig) {
     this.instance = axios.create(Object.assign(this.baseConfig, config));
     this.instance.interceptors.request.use(
-      (config: AxiosRequestConfig) => {
+      (config) => {
         return config;
       },
       (err: any) => {
@@ -18,8 +20,12 @@ class Request {
     );
     this.instance.interceptors.response.use(
       (res: AxiosResponse) => {
-        if (res.status == 401 || res.data?.code == "401") {
-        } else if (res.data?.code === 0 || res.data?.code === "0") {
+        const err =
+          setting.request.status.error[
+            res.status as keyof typeof setting.request.status.error
+          ];
+        if (err) {
+          ElMessage.error(err);
         }
         return res.data;
       },
