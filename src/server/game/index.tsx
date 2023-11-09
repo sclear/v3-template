@@ -36,6 +36,19 @@ export const game = createApiModule({
       };
     },
   },
+  virtual: {
+    url: "//mock",
+    method: "get",
+    Mock({ data }) {
+      // const start = (data.page.pageNo - 1) * 10;
+      return {
+        code: 200,
+        data: item,
+        // data: item.slice(start, start + 10),
+        count: item.length,
+      };
+    },
+  },
   test: {
     url: "//mock",
     method: "get",

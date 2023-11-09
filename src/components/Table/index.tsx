@@ -9,12 +9,14 @@ import {
 } from "vue";
 import type { PropType, Ref } from "vue";
 import "./index.less";
-import { ElTable, ElPagination, ElTableColumn } from "element-plus";
+import { ElTable, ElPagination, ElTableColumn, ElTableV2 } from "element-plus";
 import { omit } from "../../tools/util";
 import { useServer, ApiType, UseServerConfig } from "../../hook/useServer";
 import { setting } from "@/tools/setting/setting";
 import { Components } from "./components";
 import type { DialogOpenArgs } from "@/components/Dialog";
+import { deepResolverVirtual, deepResolver } from "./renderTableColumn";
+import { useElementSize } from "@vueuse/core";
 
 type UseServerProps = Pick<
   UseServerConfig<any, any, any>,
@@ -26,10 +28,6 @@ type UseServerProps = Pick<
   | "default"
   | "beforeRequest"
 >;
-interface SlotsParams {
-  row: any[];
-  $index: any;
-}
 
 const defaultProps = {
   align: "center",
@@ -57,6 +55,7 @@ interface CreateTable {
   useServerProps?: UseServerProps;
   formatRequestData?: <T>(data: T, Pagination: Pagination) => any;
   data?: Ref<any[]>;
+  virtual?: boolean;
 }
 
 // 生成Table数据
@@ -73,104 +72,9 @@ export function CreateTable(option: CreateTable) {
   };
 }
 
-// 递归解析tableHeader
-function deepResolver(
-  jsxNodes: any[],
-  formatRowText?: FormatRowText,
-  pagination?: Pagination
-) {
-  if (!jsxNodes || !jsxNodes.length) return;
-  return jsxNodes.map((item) => {
-    const prop = {
-      ...omit(item, ["children", "render"]),
-      ...defaultProps,
-      ...(item.customProps || {}),
-    };
-
-    if (item.vIf || item.vIf === false) {
-      const vIf =
-        typeof item.vIf === "boolean" || typeof item.vIf === "object"
-          ? unref(item.vIf)
-          : item.vIf();
-      if (!vIf) {
-        return null;
-      }
-    }
-
-    const rstProp = Array.isArray(prop?.prop) ? prop.prop[0] : prop?.prop;
-
-    // slots & format & !render & !type
-    let slots;
-    if (formatRowText && !item.render && !item.type) {
-      slots = {
-        default: (slots: SlotsParams) => {
-          return formatRowText(slots?.row[rstProp] as any, rstProp);
-        },
-      };
-    } else {
-      slots = {
-        default: (slots: SlotsParams) => {
-          let value: string | string[] = "";
-          if (Array.isArray(prop?.prop)) {
-            value = prop.prop.map((key: any) => slots.row[key]);
-          } else {
-            value = slots.row[rstProp];
-          }
-
-          const index =
-            slots.$index +
-            (pagination?.pageSize || 0) * ((pagination?.currentPage || 0) - 1) +
-            1;
-
-          // render custom Components
-          if (prop.type) {
-            const component = Components[prop.type as keyof typeof Components];
-            return (
-              <component
-                value={value}
-                data={slots.row}
-                index={slots.$index}
-                action={prop.action}
-                args={{
-                  index,
-                }}
-              />
-            );
-          }
-
-          // custom render
-          return item.render
-            ? item.render(value, slots.row, slots.$index, {
-                index,
-              })
-            : slots?.row[rstProp];
-        },
-      };
-    }
-
-    const columnProps = {
-      ...prop,
-      prop: rstProp,
-    };
-
-    if (item.children) {
-      return (
-        <ElTableColumn {...columnProps}>
-          {deepResolver(item.children, formatRowText, pagination)}
-        </ElTableColumn>
-      );
-    } else
-      return (
-        <ElTableColumn v-slots={slots} {...columnProps}>
-          {deepResolver(item.children, formatRowText, pagination)}
-        </ElTableColumn>
-      );
-  });
-}
-
 type TableColumnProp = string | string[];
 
-interface Column {
+export interface Column {
   prop?: TableColumnProp;
   label?: string;
   customProps?: Record<string, unknown>;
@@ -290,19 +194,34 @@ export default defineComponent({
       open,
     });
 
+    const el = ref(null);
+    const { width, height } = useElementSize(el);
+
     return () => (
-      <div v-loading={loading.value}>
-        <ElTable
-          data={unref(props.createOption.data)}
-          border
-          {...(props.createOption.customProps || {})}
-        >
-          {deepResolver(
-            props.createOption.column,
-            props.createOption.formatRowText,
-            pagination
-          )}
-        </ElTable>
+      <div ref={el} v-loading={loading.value}>
+        {props.createOption.virtual ? (
+          <ElTableV2
+            columns={
+              deepResolverVirtual(props.createOption.column, width) || []
+            }
+            data={unref(props.createOption.data)}
+            width={width.value}
+            height={height.value}
+            fixed
+          />
+        ) : (
+          <ElTable
+            data={unref(props.createOption.data)}
+            border
+            {...(props.createOption.customProps || {})}
+          >
+            {deepResolver(
+              props.createOption.column,
+              props.createOption.formatRowText,
+              pagination
+            )}
+          </ElTable>
+        )}
         {typeof props.createOption.pagination === "boolean" ? (
           props.createOption.pagination
         ) : (

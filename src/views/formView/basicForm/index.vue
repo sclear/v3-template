@@ -87,8 +87,8 @@ const searchFormRule = CreateForm({
     sex: "",
     address: "",
     name: "",
-    startTime: "",
     occupation: "",
+    startTime: "",
     endTime: "",
   }),
   createRule(create, data) {

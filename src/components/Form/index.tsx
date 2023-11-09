@@ -196,6 +196,7 @@ const Form = defineComponent({
                         data: unref(createOption.data),
                         response: res,
                       });
+                      createOption.end && createOption.end();
                     } else {
                       cb();
                       if (!props.freeze) {

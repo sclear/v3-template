@@ -83,6 +83,14 @@ export const asyncRoutes: RouteRecordRaw[] = [
     component: () => import("@/views/table/advancedTable/index.vue"),
   },
   {
+    path: "/virtual-list",
+    meta: {
+      title: "虚拟列表",
+      permission: false,
+    },
+    component: () => import("@/views/table/virtual/index.vue"),
+  },
+  {
     path: "/center",
     meta: {
       title: "个人中心",

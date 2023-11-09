@@ -16,6 +16,8 @@ type WrapperCol = {
   xl?: number;
 };
 
+type Row = [number] | [number, number];
+
 const isArray = Array.isArray;
 
 export { createRules };
@@ -25,7 +27,7 @@ export type Model = string | string[];
 
 type FormGroupType<T> = {
   children: FormSettingType<T>[];
-  row?: number[];
+  row?: Row;
   wrapperCol?: WrapperCol;
   vIf?: (args: { value: unknown; model: Model; data: RefValue<T> }) => boolean;
 };
@@ -56,7 +58,7 @@ export type FormSettingType<T> = {
   type?: keyof typeof Components;
   label?: string;
   model?: Model;
-  row?: number[];
+  row?: Row;
   wrapperCol?: WrapperCol;
   align?: "left" | "right" | "center" | "start" | "end";
   labelWidth?: number;
@@ -113,7 +115,7 @@ export type CreateFormOptions<T = any, K = unknown> = {
   type?: any;
   data: T;
   omit?: K[];
-  row?: number[];
+  row?: Row;
   wrapperCol?: WrapperCol;
   labelWidth?: number;
   api?: ApiType | Ref<ApiType>;
@@ -130,6 +132,7 @@ export type CreateFormOptions<T = any, K = unknown> = {
   onSuccess?: (args: SuccessArgs<T>) => void;
   onError?: (done: () => void) => void;
   onReady?: () => void;
+  end?: () => void;
   createRule?: (
     ruleInstance: typeof createRules,
     data: RefValue<T>
@@ -163,7 +166,6 @@ export function CreateElForm(
           if (isFormGroupType(item)) {
             // computed v-if
             const vif = computed(() => {
-              // console.log(item.vIf);
               if (
                 (item.vIf &&
                   item.vIf({

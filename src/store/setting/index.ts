@@ -128,6 +128,14 @@ const menuJson = [
     id: "5-1",
   },
   {
+    title: "虚拟列表",
+    icon: "",
+    path: "/virtual-list",
+    name: "/virtual-list",
+    parentId: 5,
+    id: "5-2",
+  },
+  {
     title: "个人中心",
     icon: "icon-gerenzhongxin",
     path: "/center",
