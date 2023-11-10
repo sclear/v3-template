@@ -10,11 +10,10 @@
 
 <script lang="tsx" setup>
 import { ElButton, ElCard } from "element-plus";
-import { ref, ExtractPropTypes } from "vue";
-import { useValidate } from "./../../hook/useValidate/";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useSetting } from "@/store/setting";
-import Form, { CreateForm } from "@/components/Form/index";
+import { Form, CreateForm } from "@/entry";
 const router = useRouter();
 const setting = useSetting();
 const formRef = ref();
@@ -62,10 +61,8 @@ const createLoginForm = CreateForm({
   customProps: {
     "label-position": "top",
   },
-  requestData() {
-    return {
-      successMessage: "登录成功",
-    };
+  useServerProps: {
+    successMessage: "登录成功",
   },
   onSuccess() {
     setting.setToken("001");

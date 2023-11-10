@@ -30,7 +30,7 @@
 <script lang="tsx" setup>
 import { ref, Ref } from "vue";
 import { ElButton, ElCard, ElInput, ElMessage } from "element-plus";
-import Form, { CreateForm } from "@/components/Form/index";
+import { Form, CreateForm } from "@/entry";
 import { omit } from "@/tools/util";
 
 const searchFormRef = ref();

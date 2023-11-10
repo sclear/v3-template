@@ -16,21 +16,21 @@ import {
   provide,
 } from "vue";
 import { ElForm, ElRow } from "element-plus";
-import createRules, { isCreateValidateInstance } from "./../../tools/validate";
-import { useServer } from "../../hook/useServer";
-import { CreateElForm, CreateFormOptions, vFor, RefValue } from "./../FormItem";
-export * from "./../FormItem";
+import createRules, { isCreateValidateInstance } from "@/tools/validate";
+import { useServer } from "@/hook/useServer";
+import { CreateElForm, CreateFormOptions, vFor, RefValue } from "../FormItem";
+export * from "../FormItem";
 import { RuleItem } from "async-validator";
 import { ruleHelper } from "./rule.helper";
-import { omit } from "@/tools/util";
-import { ApiType } from "../../hook/useServer";
+import { deepClone, omit } from "@/tools/util";
+import { ApiType } from "@/hook/useServer";
 
 export { createRules };
 
 export function CreateForm<T = any, K extends keyof RefValue<T> = never>(
   option: CreateFormOptions<T, K>
 ) {
-  const cache = JSON.parse(JSON.stringify(unref(option.data || {})));
+  const cache = deepClone(unref(option.data || {}));
 
   return {
     ...option,
@@ -49,7 +49,10 @@ export function CreateForm<T = any, K extends keyof RefValue<T> = never>(
     reset: () => {
       console.warn("fast-warning: 请勿在Form初始化时调用Form reset");
     },
-    validate: function (done?: (isClose?: boolean) => void): Promise<boolean> {
+    validate: function (
+      done?: (isClose?: boolean) => void,
+      valid?: boolean
+    ): Promise<boolean> {
       console.warn("fast-warning: 请勿在Form初始化时调用Form validate");
       return new Promise((resolve, reject) => {});
     },
@@ -109,6 +112,7 @@ const Form = defineComponent({
       props.createOption.data.value = JSON.parse(
         JSON.stringify(props.createOption.cache)
       );
+      props.createOption.data.value = deepClone(props.createOption.cache);
       setTimeout(() => {
         elFormRef.value.clearValidate();
       }, 20);
@@ -134,7 +138,6 @@ const Form = defineComponent({
       data: Record<string, any> = {},
       clearType: "all" | "default" | "never" = "default"
     ) {
-      console.log(data);
       const keys: string[] = Object.keys(data);
 
       if (!keys.length) return;
@@ -144,7 +147,6 @@ const Form = defineComponent({
       if (clearType === "all") {
         elFormRef.value.clearValidate();
       } else if (clearType === "default") {
-        console.log(keys);
         elFormRef.value.clearValidate(keys);
       }
     }
@@ -170,10 +172,18 @@ const Form = defineComponent({
       };
     });
 
-    function validate(done?: (isClose?: boolean) => void): Promise<boolean> {
-      const cb = done || function () {};
+    function validate(
+      done: (isClose?: boolean) => void = () => {},
+      valid: boolean = true
+    ): Promise<boolean> {
+      const cb = done;
+      const validate = valid
+        ? elFormRef.value.validate
+        : (cb: (valid: boolean) => {}) => {
+            cb(true);
+          };
       return new Promise((resolve, reject) => {
-        elFormRef.value.validate((valid: boolean) => {
+        validate((valid: boolean) => {
           if (valid) {
             // if has request api
             if (createOption.api) {
@@ -181,13 +191,9 @@ const Form = defineComponent({
               const { run } = useServer({
                 api: unref(createOption.api),
                 data: requestData,
-                ...(createOption.requestData
-                  ? createOption.requestData(
-                      unref(createOption.data),
-                      unref(createOption.api)
-                    )
-                  : { successMessage: "操作成功" }),
-
+                ...(createOption.useServerProps || {
+                  successMessage: "操作成功",
+                }),
                 onSuccess(resp, res) {
                   if (res.code === 200) {
                     if (createOption.onSuccess) {

@@ -1,7 +1,7 @@
-import createRules, { isCreateValidateInstance } from "./../../tools/validate";
+import createRules, { isCreateValidateInstance } from "@/tools/validate";
 import { RuleItem } from "async-validator";
-import type { FormType, FormSettingType, Model } from "./../FormItem";
-import { isFormGroupType } from "./../FormItem";
+import type { FormType, FormSettingType, Model } from "../FormItem";
+import { isFormGroupType } from "../FormItem";
 import { setting } from "@/tools/setting/setting";
 
 const isArray = Array.isArray;

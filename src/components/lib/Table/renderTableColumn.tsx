@@ -1,9 +1,9 @@
 import { unref } from "vue";
-import type { PropType, Ref } from "vue";
+import type { Ref } from "vue";
 import "./index.less";
 import { ElTableColumn } from "element-plus";
-import { omit } from "../../tools/util";
-import { Components } from "./components";
+import { omit } from "@/tools/util";
+import { Components } from "@/components/lib/Table/components";
 
 type CellRenderProps<T> = {
   cellData: T;

@@ -1,14 +1,11 @@
 import {
   computed,
   defineComponent,
-  getCurrentInstance,
   onMounted,
   provide,
-  reactive,
   inject,
   ref,
   ComponentInternalInstance,
-  useSlots,
   unref,
 } from "vue";
 import type { PropType } from "vue";
@@ -31,6 +28,7 @@ type Action = {
   label?: string;
   function?: "confirm" | "cancel";
   type?: "default" | "danger" | "warning" | "info" | "primary" | "success";
+  valid?: boolean;
   api?: ApiType;
   customData?: Object;
   render?: () => JSX.Element | JSX.Element[] | string;
@@ -99,21 +97,24 @@ export default defineComponent({
     });
 
     // close callback
-    function closeModel(api?: string, confirmOption?: object) {
+    function closeModel(api?: string, confirmOption?: object, valid?: boolean) {
       buttonLoading.value = true;
       // form联动
       if (formInstance.value && !props.freeze) {
         if (api) formInstance.value?.exposed?.setApi(api);
         if (confirmOption) formInstance.value?.exposed?.setData(confirmOption);
         formInstance.value?.exposed?.validate &&
-          formInstance.value?.exposed?.validate((isClose?: boolean) => {
-            if (isClose || isClose === undefined) {
-              buttonLoading.value = false;
-              visible.value = false;
-            } else {
-              buttonLoading.value = false;
-            }
-          });
+          formInstance.value?.exposed?.validate(
+            (isClose?: boolean) => {
+              if (isClose || isClose === undefined) {
+                buttonLoading.value = false;
+                visible.value = false;
+              } else {
+                buttonLoading.value = false;
+              }
+            },
+            valid === false ? false : true
+          );
         return;
       }
 
@@ -180,6 +181,7 @@ export default defineComponent({
       label?: string;
       api?: string;
       customData?: Object;
+      valid?: boolean;
     };
 
     const handleList = {
@@ -199,13 +201,17 @@ export default defineComponent({
           </ElButton>
         );
       },
-      confirm: (handleProps: object, confirmOption: ConfirmOption) => {
+      confirm: (
+        handleProps: object,
+        confirmOption: ConfirmOption,
+        valid: boolean = true
+      ) => {
         return () => (
           <ElButton
             type="primary"
             {...handleProps}
             onClick={() => {
-              closeModel(confirmOption.api, confirmOption.customData);
+              closeModel(confirmOption.api, confirmOption.customData, valid);
               currentClickLabel.value = confirmOption.label || "确认";
             }}
             disabled={
@@ -266,7 +272,8 @@ export default defineComponent({
               label: item.label,
               api: item.api,
               customData: item.customData,
-            }
+            },
+            item.valid
           );
         }
         if (item.render) {

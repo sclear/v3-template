@@ -51,7 +51,6 @@ const searchFormRule = CreateForm({
       label: "联系方式",
       model: "phone",
     },
-
     {
       type: "Select",
       label: "职业",
@@ -105,7 +104,6 @@ const searchFormRule = CreateForm({
         },
       ],
     },
-
     {
       row: [24],
       align: "center",
@@ -140,7 +138,7 @@ const searchFormRule = CreateForm({
     occupation: "",
     endTime: "",
   }),
-  createRule(create, data) {
+  createRule(create) {
     return {
       name: create.required(),
       address: create.required(),

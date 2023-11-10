@@ -1,7 +1,7 @@
 <script lang="tsx" setup>
 import { ref } from "vue";
 import { ElButton } from "element-plus";
-import Dialog from "@/components/Dialog";
+import { Dialog } from "@/entry";
 
 const dialogRef = ref();
 

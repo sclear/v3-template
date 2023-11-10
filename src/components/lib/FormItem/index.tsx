@@ -1,12 +1,13 @@
-import { Ref, computed, unref, ComputedRef, ref } from "vue";
-import { ElCol, ElFormItem, ElRow } from "element-plus";
+import { Ref, computed, unref, ComputedRef } from "vue";
+import { ElCol, ElFormItem } from "element-plus";
 import { Components } from "../Form/components";
-import { pick, setValueByPath } from "../../tools/util";
+import { pick, setValueByPath } from "@/tools/util";
 import { RuleItem } from "async-validator";
-import createRules, { isCreateValidateInstance } from "./../../tools/validate";
-import { ApiType } from "../../hook/useServer";
-import { getValueByPath } from "../../tools/util";
+import createRules from "@/tools/validate";
+import { ApiType } from "@/hook/useServer";
+import { getValueByPath } from "@/tools/util";
 import { ruleHelper } from "../Form/rule.helper";
+import { UseServerProps } from "../Table";
 
 type WrapperCol = {
   xs?: number;
@@ -122,6 +123,7 @@ export type CreateFormOptions<T = any, K = unknown> = {
   customProps?: any;
   tableInstance?: Ref<any>;
   loading?: Ref<boolean>;
+  useServerProps?: UseServerProps;
   requestData?: (data: RefValue<T>, api: ApiType) => any;
   onChange?: (data: {
     value: unknown;

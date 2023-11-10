@@ -9,16 +9,15 @@ import {
 } from "vue";
 import type { PropType, Ref } from "vue";
 import "./index.less";
-import { ElTable, ElPagination, ElTableColumn, ElTableV2 } from "element-plus";
-import { omit } from "../../tools/util";
-import { useServer, ApiType, UseServerConfig } from "../../hook/useServer";
+import { ElTable, ElPagination, ElTableV2 } from "element-plus";
+import { useServer, ApiType, UseServerConfig } from "@/hook/useServer";
 import { setting } from "@/tools/setting/setting";
-import { Components } from "./components";
-import type { DialogOpenArgs } from "@/components/Dialog";
+import { Components } from "../Table/components";
+import type { DialogOpenArgs } from "@/components/lib/Dialog";
 import { deepResolverVirtual, deepResolver } from "./renderTableColumn";
 import { useElementSize } from "@vueuse/core";
 
-type UseServerProps = Pick<
+export type UseServerProps = Pick<
   UseServerConfig<any, any, any>,
   | "beforeSetData"
   | "headers"
@@ -27,6 +26,8 @@ type UseServerProps = Pick<
   | "urlParams"
   | "default"
   | "beforeRequest"
+  | "successMessage"
+  | "errorMessage"
 >;
 
 const defaultProps = {

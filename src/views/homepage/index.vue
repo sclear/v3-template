@@ -18,9 +18,15 @@
 import { ElMessage, ElCard, ElRow, ElCol } from "element-plus";
 import { ref, computed, onMounted } from "vue";
 import { ElButton, ElInput } from "element-plus";
-import Table, { CreateTable } from "./../../components/Table";
-import Dialog from "./../../components/Dialog";
-import { useServer, Form, CreateForm, Trigger } from "@/entry";
+import {
+  Dialog,
+  Table,
+  CreateTable,
+  useServer,
+  Form,
+  CreateForm,
+  Trigger,
+} from "@/entry";
 
 const dialogRef = ref();
 const searchFormRef = ref();

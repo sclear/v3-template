@@ -56,7 +56,6 @@ const searchFormRule = CreateForm({
       model: "single",
       dataSource: "3",
     },
-
     {
       row: [24],
       align: "center",

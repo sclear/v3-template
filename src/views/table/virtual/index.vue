@@ -201,6 +201,7 @@ const tableOption = CreateTable({
                       type: "warning",
                       label: "暂存",
                       api: "game.testSave",
+                      valid: false,
                     },
                     {
                       function: "confirm",

@@ -186,7 +186,6 @@ const tableOption = CreateTable({
               onClick={() => {
                 dialogRef.value.open({
                   title: "编辑装备",
-                  disabled: false,
                   data: {
                     ...data,
                   },
@@ -197,11 +196,12 @@ const tableOption = CreateTable({
                     {
                       function: "confirm",
                       type: "warning",
-                      label: "暂存",
+                      label: "保存",
                       api: "game.testSave",
                     },
                     {
                       function: "confirm",
+                      label: "提交",
                       api: "game.confirm",
                     },
                   ],

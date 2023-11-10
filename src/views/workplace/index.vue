@@ -70,9 +70,14 @@
 <script lang="tsx" setup>
 import { ref, computed, onMounted } from "vue";
 import { ElButton, ElInput } from "element-plus";
-import Table, { CreateTable } from "./../../components/Table";
-import Dialog from "./../../components/Dialog";
-import { useServer, Form, CreateForm, Trigger } from "@/entry";
+import {
+  Dialog,
+  CreateTable,
+  useServer,
+  Form,
+  CreateForm,
+  Trigger,
+} from "@/entry";
 import * as echarts from "echarts";
 import { useChart } from "@/hook";
 
